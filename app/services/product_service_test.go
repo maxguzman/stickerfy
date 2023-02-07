@@ -15,7 +15,7 @@ type MockProductRepository struct {
 	mock.Mock
 }
 
-// FindAll is a mock of ProductRepository.FindAll
+// GetAll is a mock of ProductRepository.GetAll
 func (m *MockProductRepository) GetAll() ([]models.Product, error) {
 	args := m.Called()
 	return args.Get(0).([]models.Product), args.Error(1)
@@ -45,10 +45,10 @@ func (m *MockProductRepository) Delete(id string) error {
 	return args.Error(0)
 }
 
-// TestFindAllProducts tests ProductService.FindAll
+// TestGetAllProducts tests ProductService.GetAll
 func TestGetAllProducts(t *testing.T) {
 	mockProductRepository := new(MockProductRepository)
-	mockProductRepository.On("FindAll").Return([]models.Product{}, nil)
+	mockProductRepository.On("GetAll").Return([]models.Product{}, nil)
 
 	productService := services.NewProductService(mockProductRepository)
 

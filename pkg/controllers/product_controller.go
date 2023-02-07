@@ -37,7 +37,10 @@ func (pc *productController) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(products)
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 // Get returns a product by id
@@ -49,13 +52,19 @@ func (pc *productController) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	if err := json.NewEncoder(w).Encode(product); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 // New creates a new product
 func (pc *productController) Post(w http.ResponseWriter, r *http.Request) {
 	var product models.Product
-	json.NewDecoder(r.Body).Decode(&product)
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err := pc.productService.Post(product)
 	if err != nil {
@@ -69,7 +78,10 @@ func (pc *productController) Post(w http.ResponseWriter, r *http.Request) {
 // Update updates a product by id
 func (pc *productController) Update(w http.ResponseWriter, r *http.Request) {
 	var product models.Product
-	json.NewDecoder(r.Body).Decode(&product)
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err := pc.productService.Update(product)
 	if err != nil {

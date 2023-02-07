@@ -35,5 +35,7 @@ func (fr *fiberRouter) Delete(uri string, f func(w http.ResponseWriter, r *http.
 
 func (fr *fiberRouter) Serve(port string) {
 	fmt.Printf("Fiber server running on port %s", port)
-	fr.app.Listen(port)
+	if err := fr.app.Listen(port); err != nil {
+		panic(err)
+	}
 }

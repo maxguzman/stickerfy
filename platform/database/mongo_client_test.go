@@ -16,32 +16,32 @@ type MockMongoProductRepository struct {
 }
 
 // FindAll is a mock of MongoProductRepository.FindAll
-func (m *MockMongoProductRepository) GetAll(collection string, result interface{}) error {
-	args := m.Called(collection, result)
-	return args.Error(0)
+func (m *MockMongoProductRepository) GetAll() ([]models.Product, error) {
+	args := m.Called()
+	return args.Get(0).([]models.Product), args.Error(0)
 }
 
 // GetByID is a mock of MongoProductRepository.GetByID
-func (m *MockMongoProductRepository) GetByID(collection string, id string, result interface{}) error {
-	args := m.Called(collection, id, result)
-	return args.Error(0)
+func (m *MockMongoProductRepository) GetByID(id string) (models.Product, error) {
+	args := m.Called(id)
+	return args.Get(0).(models.Product), args.Error(1)
 }
 
 // Post is a mock of MongoProductRepository.Post
-func (m *MockMongoProductRepository) Post(collection string, product models.Product) error {
-	args := m.Called(collection, product)
+func (m *MockMongoProductRepository) Post(product models.Product) error {
+	args := m.Called(product)
 	return args.Error(0)
 }
 
 // Update is a mock of MongoProductRepository.Update
-func (m *MockMongoProductRepository) Update(collection string, id string, product models.Product) error {
-	args := m.Called(collection, id, product)
+func (m *MockMongoProductRepository) Update(product models.Product) error {
+	args := m.Called(product)
 	return args.Error(0)
 }
 
 // Delete is a mock of MongoProductRepository.Delete
-func (m *MockMongoProductRepository) Delete(collection string, id string) error {
-	args := m.Called(collection, id)
+func (m *MockMongoProductRepository) Delete(id string) error {
+	args := m.Called(id)
 	return args.Error(0)
 }
 

@@ -6,13 +6,13 @@ import (
 )
 
 // PublicRoutes registers all public routes
-func PublicRoutes(router router.Router, productController controllers.ProductController, orderController controllers.OrderController) {
-	router.Get("/products", productController.GetAll)
-	router.Get("/products/{id}", productController.GetByID)
-	router.Post("/products", productController.Post)
-	router.Put("/products/{id}", productController.Update)
-	router.Delete("/products/{id}", productController.Delete)
+func PublicRoutes(httpRouter router.Router, productController controllers.ProductController, orderController controllers.OrderController) {
+	httpRouter.Get("/products", productController.GetAll)
+	httpRouter.Get("/products/{id}", productController.GetByID)
+	httpRouter.Post("/products", productController.Post)
+	httpRouter.Put("/products/{id}", productController.Update)
+	httpRouter.Delete("/products/{id}", productController.Delete)
 
-	router.Get("/orders", orderController.GetAll)
-	router.Post("/orders", orderController.Post)
+	httpRouter.Get("/orders", orderController.GetAll)
+	httpRouter.Post("/orders", orderController.Post)
 }

@@ -34,13 +34,19 @@ func (oc *orderController) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(orders)
+	if err := json.NewEncoder(w).Encode(orders); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 // Post creates a new order
 func (oc *orderController) Post(w http.ResponseWriter, r *http.Request) {
 	var order models.Order
-	json.NewDecoder(r.Body).Decode(&order)
+	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err := oc.orderService.Post(order)
 	if err != nil {
