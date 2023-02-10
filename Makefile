@@ -20,7 +20,7 @@ test: clean critic security lint
 	go tool cover -func=cover.out
 
 build: test
-	CGO_ENABLED=0 go build -ldflags="-w -s" -o $(BUILD_DIR)/$(APP_NAME) cmd/cmd.go
+	GOARCH=amd64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) cmd/cmd.go
 
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
