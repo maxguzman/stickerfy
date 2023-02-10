@@ -2,6 +2,7 @@ package router
 
 import (
 	"stickerfy/pkg/configs"
+	"stickerfy/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -31,8 +32,26 @@ func (fr *fiberRouter) Delete(path string, f func(*fiber.Ctx) error) {
 	fr.app.Delete(path, f)
 }
 
-func (fr *fiberRouter) Serve(port string) {
-	if err := fr.app.Listen(":" + port); err != nil {
+func (fr *fiberRouter) Serve() {
+	addr, err := utils.URLBuilder("server")
+	if err != nil {
 		panic(err)
 	}
+	if err := fr.app.Listen(addr); err != nil {
+		panic(err)
+	}
+}
+
+func (fr *fiberRouter) ServeWithGracefulShutdown() {
+	addr, err := utils.URLBuilder("server")
+	if err != nil {
+		panic(err)
+	}
+	if err := fr.app.Listen(addr); err != nil {
+		panic(err)
+	}
+}
+
+func (fr *fiberRouter) Use(f func(c *fiber.Ctx) error) {
+	fr.app.Use(f)
 }

@@ -10,8 +10,12 @@ import (
 
 // FiberConfig returns the fiber config
 func FiberConfig() fiber.Config {
-	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
+	writeTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("WRITE_TIMEOUT"))
+	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("READ_TIMEOUT"))
+
 	return fiber.Config{
-		ReadTimeout: time.Second * time.Duration(readTimeoutSecondsCount),
+		WriteTimeout: time.Second * time.Duration(writeTimeoutSecondsCount),
+		ReadTimeout:  time.Second * time.Duration(readTimeoutSecondsCount),
+		IdleTimeout:  time.Second * 60,
 	}
 }

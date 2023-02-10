@@ -8,5 +8,7 @@ type Router interface {
 	Post(path string, f func(*fiber.Ctx) error)
 	Put(path string, f func(*fiber.Ctx) error)
 	Delete(path string, f func(*fiber.Ctx) error)
-	Serve(port string)
+	Use(func(c *fiber.Ctx) error)
+	Serve()
+	ServeWithGracefulShutdown()
 }

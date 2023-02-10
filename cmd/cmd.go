@@ -1,13 +1,12 @@
 package main
 
 import (
-	"os"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
-	"stickerfy/pkg/routes"
-	"stickerfy/pkg/router"
 	"stickerfy/pkg/platform/database"
+	"stickerfy/pkg/router"
+	"stickerfy/pkg/routes"
 )
 
 var (
@@ -23,5 +22,5 @@ var (
 func main() {
 	routes.ProductRoutes(httpRouter, productController)
 	routes.OrderRoutes(httpRouter, orderController)
-	httpRouter.Serve(os.Getenv("PORT"))
+	httpRouter.Serve()
 }

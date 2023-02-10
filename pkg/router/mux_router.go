@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"stickerfy/pkg/configs"
+	"stickerfy/pkg/utils"
 
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
@@ -35,10 +36,28 @@ func (mr *muxRouter) Delete(path string, f func(*fiber.Ctx) error) {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodDelete)
 }
 
-func (mr *muxRouter) Serve(port string) {
-	fmt.Printf("Mux server running on port %s", port)
-	server := configs.MuxConfig(mr.mux, port)
+func (mr *muxRouter) Serve() {
+	url, err := utils.URLBuilder("server")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Mux server is running on: %s", url)
+	server := configs.MuxConfig(mr.mux)
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
+
+func (mr *muxRouter) ServeWithGracefulShutdown() {
+	url, err := utils.URLBuilder("server")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Mux server running on port %s", url)
+	server := configs.MuxConfig(mr.mux)
+	if err := server.ListenAndServe(); err != nil {
+		panic(err)
+	}
+}
+
+func (mr *muxRouter) Use(f func(c *fiber.Ctx) error) {}
