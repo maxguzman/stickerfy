@@ -2,23 +2,25 @@ package events
 
 import (
 	"fmt"
+	"stickerfy/pkg/configs"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-// KafkaProducer is a wrapper for the Kafka producer
+// KafkaProducer is an implementation of the Producer interface
 type KafkaProducer struct {
 	Producer *kafka.Producer
-	Topic    string
-}
-
-type kafkaProducer interface {
-	Create(string, string) (*KafkaProducer, error)
 }
 
 // NewKafkaProducer instantiates the Kafka producer
-func NewKafkaProducer(brokers, topic string, factory kafkaProducer) (*KafkaProducer, error) {
-	return factory.Create(brokers, topic)
+func NewKafkaProducer() *KafkaProducer {
+	kafkaProducer, err := kafka.NewProducer(configs.KafkaConfig())
+	if err != nil {
+		fmt.Printf("Failed to create producer: %v", err)
+	}
+	return &KafkaProducer{
+		Producer: kafkaProducer,
+	}
 }
 
 // Produce produces a message to Kafka
@@ -55,20 +57,20 @@ func (p *KafkaProducer) Produce(topic string, value []byte) error {
 	return nil
 }
 
-// KafkaConsumer is a wrapper for Kafka consumer
+// KafkaConsumer is an implementation of the Consumer interface
 type KafkaConsumer struct {
 	Consumer *kafka.Consumer
-	Topic    string
-	GroupID  string
-}
-
-type kafkaConsumerFactory interface {
-	Create(string, string, string) (*KafkaConsumer, error)
 }
 
 // NewKafkaConsumer instantiates the Kafka consumer
-func NewKafkaConsumer(brokers, topic, groupID string, factory kafkaConsumerFactory) (*KafkaConsumer, error) {
-	return factory.Create(brokers, topic, groupID)
+func NewKafkaConsumer() *KafkaConsumer {
+	kafkaConsumer, err := kafka.NewConsumer(configs.KafkaConfig())
+	if err != nil {
+		fmt.Printf("Failed to create consumer: %v", err)
+	}
+	return &KafkaConsumer{
+		Consumer: kafkaConsumer,
+	}
 }
 
 // Consume a message from Kafka

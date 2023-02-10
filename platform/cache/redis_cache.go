@@ -5,20 +5,19 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"stickerfy/pkg/configs"
 )
 
-// RedisClient is a wrapper for the Redis client
+// RedisClient is an implementation of the Cache interface
 type RedisClient struct {
 	Client *redis.Client
 }
 
-type redisClientFactory interface {
-	Create(string, string) (*RedisClient, error)
-}
-
-// NewRedisClient instantiates the Redis client using ...
-func NewRedisClient(host, pass string, factory redisClientFactory) (*RedisClient, error) {
-	return factory.Create(host, pass)
+// NewRedisClient instantiates the Redis client
+func NewRedisClient() *RedisClient {
+	return &RedisClient{
+		Client: redis.NewClient(configs.RedisConfig()),
+	}
 }
 
 // Set a key-value pair in Redis
