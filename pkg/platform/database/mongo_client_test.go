@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"stickerfy/app/models"
-	"stickerfy/platform/database"
+	"stickerfy/pkg/platform/database"
 )
 
 // MockMongoProductRepository is a mock of MongoProductRepository

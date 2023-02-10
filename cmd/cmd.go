@@ -5,9 +5,9 @@ import (
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
-	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
-	"stickerfy/platform/database"
+	"stickerfy/pkg/router"
+	"stickerfy/pkg/platform/database"
 )
 
 var (
