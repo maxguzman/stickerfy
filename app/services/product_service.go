@@ -14,16 +14,16 @@ type ProductService interface {
 	Update(product models.Product) error
 }
 
+// productService is a implementation of ProductService
+type productService struct {
+	productRepository repositories.ProductRepository
+}
+
 // NewProductService creates a new ProductService
 func NewProductService(productRepository repositories.ProductRepository) ProductService {
 	return &productService{
 		productRepository: productRepository,
 	}
-}
-
-// productService is a implementation of ProductService
-type productService struct {
-	productRepository repositories.ProductRepository
 }
 
 // GetAll returns all products

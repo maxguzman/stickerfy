@@ -16,16 +16,16 @@ type ProductController interface {
 	Update(w http.ResponseWriter, r *http.Request)
 }
 
+// productController is a implementation of ProductController
+type productController struct {
+	productService services.ProductService
+}
+
 // NewProductController creates a new ProductController
 func NewProductController(productService services.ProductService) ProductController {
 	return &productController{
 		productService: productService,
 	}
-}
-
-// productController is a implementation of ProductController
-type productController struct {
-	productService services.ProductService
 }
 
 // GetAll returns all products

@@ -13,16 +13,16 @@ type OrderController interface {
 	Post(w http.ResponseWriter, r *http.Request)
 }
 
+// orderController is a implementation of OrderController
+type orderController struct {
+	orderService services.OrderService
+}
+
 // NewOrderController creates a new OrderController
 func NewOrderController(orderService services.OrderService) OrderController {
 	return &orderController{
 		orderService: orderService,
 	}
-}
-
-// orderController is a implementation of OrderController
-type orderController struct {
-	orderService services.OrderService
 }
 
 // GetAll returns all orders

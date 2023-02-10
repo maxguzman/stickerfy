@@ -11,16 +11,16 @@ type OrderService interface {
 	Post(order models.Order) error
 }
 
+// orderService is a implementation of OrderService
+type orderService struct {
+	orderRepository repositories.OrderRepository
+}
+
 // NewOrderService creates a new OrderService
 func NewOrderService(orderRepository repositories.OrderRepository) OrderService {
 	return &orderService{
 		orderRepository: orderRepository,
 	}
-}
-
-// orderService is a implementation of OrderService
-type orderService struct {
-	orderRepository repositories.OrderRepository
 }
 
 // GetAll returns all orders
