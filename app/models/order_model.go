@@ -1,13 +1,15 @@
 package models
 
+import "github.com/google/uuid"
+
 // Order represents an order
 type Order struct {
-	OrderID string      `json:"order_id"`
-	Items   []OrderItem `json:"items"`
+	OrderID uuid.UUID   `json:"order_id" validate:"required,uuid"`
+	Items   []OrderItem `json:"items" validate:"required,dive"`
 }
 
 // OrderItem represents an item in an order
 type OrderItem struct {
-	Product  Product `json:"product"`
-	Quantity int32   `json:"quantity"`
+	Product  Product `json:"product" validate:"required"`
+	Quantity int32   `json:"quantity" validate:"required,min=1"`
 }
