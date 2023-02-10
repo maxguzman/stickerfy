@@ -3,6 +3,7 @@ package services_test
 import (
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -22,7 +23,7 @@ func (m *MockProductRepository) GetAll() ([]models.Product, error) {
 }
 
 // GetByID is a mock of ProductRepository.GetByID
-func (m *MockProductRepository) GetByID(id string) (models.Product, error) {
+func (m *MockProductRepository) GetByID(id uuid.UUID) (models.Product, error) {
 	args := m.Called(id)
 	return args.Get(0).(models.Product), args.Error(1)
 }
@@ -40,8 +41,8 @@ func (m *MockProductRepository) Update(product models.Product) error {
 }
 
 // Delete is a mock of ProductRepository.Delete
-func (m *MockProductRepository) Delete(id string) error {
-	args := m.Called(id)
+func (m *MockProductRepository) Delete(product models.Product) error {
+	args := m.Called(product)
 	return args.Error(0)
 }
 
@@ -59,12 +60,13 @@ func TestGetAllProducts(t *testing.T) {
 
 // TestGetProductByID tests ProductService.GetByID
 func TestGetProductByID(t *testing.T) {
+	mockId := uuid.New()
 	mockProductRepository := new(MockProductRepository)
-	mockProductRepository.On("GetByID", "1").Return(models.Product{}, nil)
+	mockProductRepository.On("GetByID", mockId).Return(models.Product{}, nil)
 
 	productService := services.NewProductService(mockProductRepository)
 
-	product, err := productService.GetByID("1")
+	product, err := productService.GetByID(mockId)
 	assert.Nil(t, err)
 	assert.Equal(t, models.Product{}, product)
 }
@@ -94,10 +96,10 @@ func TestUpdateProduct(t *testing.T) {
 // TestDeleteProduct tests ProductService.Delete
 func TestDeleteProduct(t *testing.T) {
 	mockProductRepository := new(MockProductRepository)
-	mockProductRepository.On("Delete", "1").Return(nil)
+	mockProductRepository.On("Delete", models.Product{}).Return(nil)
 
 	productService := services.NewProductService(mockProductRepository)
 
-	err := productService.Delete("1")
+	err := productService.Delete(models.Product{})
 	assert.Nil(t, err)
 }

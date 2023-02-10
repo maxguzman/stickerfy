@@ -3,8 +3,9 @@ package database
 import (
 	"stickerfy/app/models"
 	"stickerfy/app/repositories"
-)
 
+	"github.com/google/uuid"
+)
 
 // ProductRepositoryImpl is a implementation of ProductRepository
 type mongoProductRepository struct{}
@@ -20,7 +21,7 @@ func (pr *mongoProductRepository) GetAll() ([]models.Product, error) {
 }
 
 // Get returns a product by id
-func (pr *mongoProductRepository) GetByID(id string) (models.Product, error) {
+func (pr *mongoProductRepository) GetByID(id uuid.UUID) (models.Product, error) {
 	return models.Product{}, nil
 }
 
@@ -35,7 +36,7 @@ func (pr *mongoProductRepository) Update(product models.Product) error {
 }
 
 // Delete deletes a product by id
-func (pr *mongoProductRepository) Delete(id string) error {
+func (pr *mongoProductRepository) Delete(product models.Product) error {
 	return nil
 }
 
