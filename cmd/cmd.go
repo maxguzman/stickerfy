@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
@@ -20,9 +21,6 @@ var (
 )
 
 func main() {
-	const port string = ":8080"
-
 	routes.PublicRoutes(httpRouter, productController, orderController)
-
-	httpRouter.Serve(port)
+	httpRouter.Serve(os.Getenv("PORT"))
 }
