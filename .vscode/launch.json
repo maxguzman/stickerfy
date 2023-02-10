@@ -6,8 +6,13 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}",
-      "env": {},
+      "program": "${workspaceFolder}/cmd/cmd.go",
+      "env": {
+        "KAFKA_BROKERS": "localhost:9092",
+        "TOPIC_NAME": "stickerfy",
+        "PORT": "8000",
+        "SERVER_READ_TIMEOUT": "60",
+      },
       "args": []
     }
   ]
