@@ -2,7 +2,7 @@ package models
 
 // Order represents an order
 type Order struct {
-	OrderID string      `json:"orderId"`
+	OrderID string      `json:"order_id"`
 	Items   []OrderItem `json:"items"`
 }
 
