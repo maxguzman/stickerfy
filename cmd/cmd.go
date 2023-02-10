@@ -22,5 +22,6 @@ var (
 func main() {
 	routes.ProductRoutes(httpRouter, productController)
 	routes.OrderRoutes(httpRouter, orderController)
+	routes.NotFoundRoute(httpRouter)
 	httpRouter.Serve()
 }
