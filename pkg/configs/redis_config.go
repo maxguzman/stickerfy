@@ -3,17 +3,14 @@ package configs
 import (
 	"os"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/go-redis/redis/v8"
 )
 
-// KafkaConfig returns a Kafka config
-func KafkaConfig() *kafka.ConfigMap {
-	return &kafka.ConfigMap{
-		"bootstrap.servers":     os.Getenv("KAFKA_BROKERS"),
-		"group.id":              os.Getenv("KAFKA_GROUP_ID"),
-		"broker.address.family": "v4",
-		"session.timeout.ms":    6000,
-		"auto.offset.reset":     "earliest",
-		"enable.auto.commit":    false,
+// RedisConfig returns a redis config
+func RedisConfig() *redis.Options {
+	return &redis.Options{
+		Addr:     os.Getenv("REDIS_HOST"),
+		Password: os.Getenv("REDIS_PASS"),
+		DB:       0,
 	}
 }
