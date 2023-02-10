@@ -1,25 +1,12 @@
-FROM golang:1.17-alpine AS builder
-
+FROM golang:alpine as builder
 LABEL maintainer="Max Guzman <max.guzman@icloud.com>"
-
-# Move to working directory (/build).
+RUN apk --no-cache add alpine-sdk
+RUN mkdir -p /build
+ADD . /build
 WORKDIR /build
+RUN GOOS=linux GOARCH=amd64 go build -tags musl -o stickerfy ./cmd/.
 
-# Copy and download dependency using go mod.
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the code into the container.
-COPY . .
-
-# Set necessary environment variables needed for our image and build the API server.
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o apiserver .
-
-FROM scratch
-
-# Copy binary and config files from /build to root folder of scratch container.
-COPY --from=builder ["/build/apiserver", "/build/.env", "/"]
-
-# Command to run when starting the container.
-ENTRYPOINT ["/apiserver"]
+FROM alpine
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /build/stickerfy /app/
+ENTRYPOINT ["/app/stickerfy"]
