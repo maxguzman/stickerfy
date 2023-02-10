@@ -17,10 +17,11 @@ var (
 	orderService      services.OrderService          = services.NewOrderService(orderRepository)
 	productController controllers.ProductController  = controllers.NewProductController(productService)
 	orderController   controllers.OrderController    = controllers.NewOrderController(orderService)
-	httpRouter        router.Router                  = router.NewMuxRouter()
+	httpRouter        router.Router                  = router.NewFiberRouter()
 )
 
 func main() {
-	routes.PublicRoutes(httpRouter, productController, orderController)
+	routes.ProductRoutes(httpRouter, productController)
+	routes.OrderRoutes(httpRouter, orderController)
 	httpRouter.Serve(os.Getenv("PORT"))
 }

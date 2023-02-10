@@ -1,19 +1,21 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // ProductController is an interface for a product controller
 type ProductController interface {
-	GetAll(w http.ResponseWriter, r *http.Request)
-	GetByID(w http.ResponseWriter, r *http.Request)
-	Post(w http.ResponseWriter, r *http.Request)
-	Delete(w http.ResponseWriter, r *http.Request)
-	Update(w http.ResponseWriter, r *http.Request)
+	GetAll(*fiber.Ctx) error
+	GetByID(*fiber.Ctx) error
+	Post(*fiber.Ctx) error
+	Delete(*fiber.Ctx) error
+	Update(*fiber.Ctx) error
 }
 
 // productController is a implementation of ProductController
@@ -29,76 +31,126 @@ func NewProductController(productService services.ProductService) ProductControl
 }
 
 // GetAll returns all products
-func (pc *productController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (pc *productController) GetAll(c *fiber.Ctx) error {
 	products, err := pc.productService.GetAll()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"products": nil,
+			"error":    true,
+			"msg":      "there where no products found",
+		})
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(products); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"products": products,
+		"error":    false,
+		"msg":      nil,
+	})
 }
 
 // Get returns a product by id
-func (pc *productController) GetByID(w http.ResponseWriter, r *http.Request) {
-	product, err := pc.productService.GetByID(r.URL.Query().Get("id"))
+func (pc *productController) GetByID(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"product": nil,
+			"error":   true,
+			"msg":     "invalid id",
+		})
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(product); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	product, err := pc.productService.GetByID(id)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"product": nil,
+			"error":   true,
+			"msg":     "there was an error getting the product",
+		})
 	}
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"product": product,
+		"error":   false,
+		"msg":     nil,
+	})
 }
 
 // New creates a new product
-func (pc *productController) Post(w http.ResponseWriter, r *http.Request) {
+func (pc *productController) Post(c *fiber.Ctx) error {
 	var product models.Product
-	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	if err := c.BodyParser(&product); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"msg":     "invalid product",
+			"product": nil,
+		})
 	}
 
 	err := pc.productService.Post(product)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"product": nil,
+			"error":   true,
+			"msg":     "there was an error creating the product",
+		})
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"product": product,
+		"error":   false,
+		"msg":     nil,
+	})
 }
 
 // Update updates a product by id
-func (pc *productController) Update(w http.ResponseWriter, r *http.Request) {
+func (pc *productController) Update(c *fiber.Ctx) error {
 	var product models.Product
-	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	if err := c.BodyParser(&product); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"msg":     "invalid product",
+			"product": nil,
+		})
 	}
 
 	err := pc.productService.Update(product)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"product": nil,
+			"error":   true,
+			"msg":     "there was an error updating the product",
+		})
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"product": product,
+		"error":   false,
+		"msg":     nil,
+	})
 }
 
 // Delete deletes a product by id
-func (pc *productController) Delete(w http.ResponseWriter, r *http.Request) {
-	err := pc.productService.Delete(r.URL.Query().Get("id"))
+func (pc *productController) Delete(c *fiber.Ctx) error {
+	var product models.Product
+	if err := c.BodyParser(&product); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"msg":     "invalid product",
+			"product": nil,
+		})
+	}
+	err := pc.productService.Delete(product)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"product": nil,
+			"error":   true,
+			"msg":     "there was an error deleting the product",
+		})
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"product": product,
+		"error":   false,
+		"msg":     nil,
+	})
 }

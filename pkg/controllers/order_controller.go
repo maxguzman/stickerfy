@@ -1,16 +1,17 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // OrderController is an interface for an order controller
 type OrderController interface {
-	GetAll(w http.ResponseWriter, r *http.Request)
-	Post(w http.ResponseWriter, r *http.Request)
+	GetAll(*fiber.Ctx) error
+	Post(*fiber.Ctx) error
 }
 
 // orderController is a implementation of OrderController
@@ -26,33 +27,39 @@ func NewOrderController(orderService services.OrderService) OrderController {
 }
 
 // GetAll returns all orders
-func (oc *orderController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (oc *orderController) GetAll(c *fiber.Ctx) error {
 	orders, err := oc.orderService.GetAll()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"orders": nil,
+			"error":  true,
+			"msg":    "there where no orders found",
+		})
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(orders); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"orders": orders,
+		"error":  false,
+		"msg":    nil,
+	})
 }
 
 // Post creates a new order
-func (oc *orderController) Post(w http.ResponseWriter, r *http.Request) {
+func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
-	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	err := oc.orderService.Post(order)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"order": nil,
+			"error": true,
+			"msg":   "there was an error creating the order",
+		})
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"order": order,
+		"error": false,
+		"msg":   nil,
+	})
 }

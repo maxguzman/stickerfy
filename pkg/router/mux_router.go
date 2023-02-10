@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"stickerfy/pkg/configs"
 
+	"github.com/gofiber/adaptor/v2"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gorilla/mux"
 )
 
@@ -17,20 +19,20 @@ func NewMuxRouter() Router {
 	return &muxRouter{mux: mux.NewRouter()}
 }
 
-func (mr *muxRouter) Get(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	mr.mux.HandleFunc(path, f).Methods(http.MethodGet)
+func (mr *muxRouter) Get(path string, f func(*fiber.Ctx) error) {
+	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodGet)
 }
 
-func (mr *muxRouter) Post(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	mr.mux.HandleFunc(path, f).Methods(http.MethodPost)
+func (mr *muxRouter) Post(path string, f func(*fiber.Ctx) error) {
+	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodPost)
 }
 
-func (mr *muxRouter) Put(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	mr.mux.HandleFunc(path, f).Methods(http.MethodPut)
+func (mr *muxRouter) Put(path string, f func(*fiber.Ctx) error) {
+	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodPut)
 }
 
-func (mr *muxRouter) Delete(path string, f func(w http.ResponseWriter, r *http.Request)) {
-	mr.mux.HandleFunc(path, f).Methods(http.MethodDelete)
+func (mr *muxRouter) Delete(path string, f func(*fiber.Ctx) error) {
+	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodDelete)
 }
 
 func (mr *muxRouter) Serve(port string) {
