@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// fiberRouter is an implementation of Router interface
 type fiberRouter struct {
 	app *fiber.App
 }
@@ -16,22 +17,37 @@ func NewFiberRouter() Router {
 	return &fiberRouter{app: fiber.New(configs.FiberConfig())}
 }
 
-func (fr *fiberRouter) Get(path string, f func(*fiber.Ctx) error) {
-	fr.app.Get(path, f)
+// Get is a method for GET HTTP method
+func (fr *fiberRouter) Get(path string, f func(*fiber.Ctx) error) fiber.Router {
+	return fr.app.Get(path, f)
 }
 
-func (fr *fiberRouter) Post(path string, f func(*fiber.Ctx) error) {
-	fr.app.Post(path, f)
+// Post is a method for POST HTTP method
+func (fr *fiberRouter) Post(path string, f func(*fiber.Ctx) error) fiber.Router {
+	return fr.app.Post(path, f)
 }
 
-func (fr *fiberRouter) Put(path string, f func(*fiber.Ctx) error) {
-	fr.app.Put(path, f)
+// Put is a method for PUT HTTP method
+func (fr *fiberRouter) Put(path string, f func(*fiber.Ctx) error) fiber.Router {
+	return fr.app.Put(path, f)
 }
 
-func (fr *fiberRouter) Delete(path string, f func(*fiber.Ctx) error) {
-	fr.app.Delete(path, f)
+// Delete is a method for DELETE HTTP method
+func (fr *fiberRouter) Delete(path string, f func(*fiber.Ctx) error) fiber.Router {
+	return fr.app.Delete(path, f)
 }
 
+// Group is a method for grouping routes
+func (fr *fiberRouter) Group(prefix string, f func(c *fiber.Ctx) error) fiber.Router {
+	return fr.app.Group(prefix, f)
+}
+
+// Use is a method for adding middleware to the router
+func (fr *fiberRouter) Use(f func(c *fiber.Ctx) error) fiber.Router {
+	return fr.app.Use(f)
+}
+
+// Serve is a method for running the server
 func (fr *fiberRouter) Serve() {
 	addr, err := utils.URLBuilder("server")
 	if err != nil {
@@ -42,6 +58,7 @@ func (fr *fiberRouter) Serve() {
 	}
 }
 
+// ServeWithGracefulShutdown is a method for running the server with graceful shutdown
 func (fr *fiberRouter) ServeWithGracefulShutdown() {
 	addr, err := utils.URLBuilder("server")
 	if err != nil {
@@ -50,8 +67,4 @@ func (fr *fiberRouter) ServeWithGracefulShutdown() {
 	if err := fr.app.Listen(addr); err != nil {
 		panic(err)
 	}
-}
-
-func (fr *fiberRouter) Use(f func(c *fiber.Ctx) error) {
-	fr.app.Use(f)
 }

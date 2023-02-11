@@ -20,22 +20,43 @@ func NewMuxRouter() Router {
 	return &muxRouter{mux: mux.NewRouter()}
 }
 
-func (mr *muxRouter) Get(path string, f func(*fiber.Ctx) error) {
+// TODO: Implement Get, Post, Put, and Delete
+// Get is a function that adds a new GET route
+func (mr *muxRouter) Get(path string, f func(*fiber.Ctx) error) fiber.Router {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodGet)
+	return nil
 }
 
-func (mr *muxRouter) Post(path string, f func(*fiber.Ctx) error) {
+// Post is a function that adds a new POST route
+func (mr *muxRouter) Post(path string, f func(*fiber.Ctx) error) fiber.Router {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodPost)
+	return nil
 }
 
-func (mr *muxRouter) Put(path string, f func(*fiber.Ctx) error) {
+// Put is a function that adds a new PUT route
+func (mr *muxRouter) Put(path string, f func(*fiber.Ctx) error) fiber.Router {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodPut)
+	return nil
 }
 
-func (mr *muxRouter) Delete(path string, f func(*fiber.Ctx) error) {
+// Delete is a function that adds a new DELETE route
+func (mr *muxRouter) Delete(path string, f func(*fiber.Ctx) error) fiber.Router {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodDelete)
+	return nil
 }
 
+// TODO: Implement Group and Use
+// Use is a function that adds middleware to the router
+func (mr *muxRouter) Use(f func(c *fiber.Ctx) error) fiber.Router {
+	return nil
+}
+
+// Group is a function that groups routes
+func (mr *muxRouter) Group(prefix string, f func(c *fiber.Ctx) error) fiber.Router {
+	return nil
+}
+
+// Serve is a function that runs the server
 func (mr *muxRouter) Serve() {
 	url, err := utils.URLBuilder("server")
 	if err != nil {
@@ -48,6 +69,8 @@ func (mr *muxRouter) Serve() {
 	}
 }
 
+// TODO: Implement graceful shutdown
+// ServeWithGracefulShutdown is a function that runs the server with graceful shutdown
 func (mr *muxRouter) ServeWithGracefulShutdown() {
 	url, err := utils.URLBuilder("server")
 	if err != nil {
@@ -59,5 +82,3 @@ func (mr *muxRouter) ServeWithGracefulShutdown() {
 		panic(err)
 	}
 }
-
-func (mr *muxRouter) Use(f func(c *fiber.Ctx) error) {}
