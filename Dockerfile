@@ -4,7 +4,7 @@ RUN apk --no-cache add alpine-sdk
 RUN mkdir -p /build
 ADD . /build
 WORKDIR /build
-RUN GOOS=linux GOARCH=amd64 go build -tags musl -o stickerfy ./cmd/.
+RUN GOOS=linux GOARCH=amd64 go build -tags musl -o stickerfy .
 
 FROM alpine
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/

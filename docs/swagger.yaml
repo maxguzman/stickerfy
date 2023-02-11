@@ -1,0 +1,19 @@
+basePath: /
+info:
+  contact:
+    email: max.guzman@icloud.com
+    name: Max Guzman
+  description: A fun sticker store REST API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Stickerfy API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

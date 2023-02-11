@@ -20,7 +20,7 @@ test: clean critic security lint
 	go tool cover -func=cover.out
 
 build: test
-	GOARCH=amd64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) cmd/cmd.go
+	GOARCH=amd64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) .
 
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
@@ -28,7 +28,7 @@ run: swag build
 swag:
 	swag init
 
-docker.run: docker.network docker.stickerfy docker.redis docker.mongo docker.zookeeper docker.kafka
+docker.run: docker.network swag docker.stickerfy docker.redis docker.mongo docker.zookeeper docker.kafka
 
 docker.network:
 	docker network inspect dev-network >/dev/null 2>&1 || \
@@ -42,7 +42,13 @@ docker.stickerfy: docker.stickerfy.build
 		--name stickerfy \
 		--network dev-network \
 		-p 8000:8000 \
-		-e PORT=8000 \
+		-e SERVER_host="" \
+		-e SERVER_PORT="8000" \
+		-e READ_TIMEOUT=15 \
+		-e WRITE_TIMEOUT=15 \
+		-e IDLE_TIMEOUT=60 \
+		-e KAFKA_BROKERS="localhost:9092" \
+		-e TOPIC_NAME="stickerfy_order_added" \
 		stickerfy
 
 docker.redis:
@@ -102,3 +108,5 @@ docker.stop.kafka:
 
 docker.scan:
 	docker scan stickerfy
+
+refresh: docker.stop.stickerfy docker.stickerfy
