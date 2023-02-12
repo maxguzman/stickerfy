@@ -1,0 +1,80 @@
+GET http://0.0.0.0:8000/products
+content-type: application/json
+
+###
+
+GET http://0.0.0.0:8000/product/04cfe1c9-f77a-443e-a5cc-38cee4b1c9ac
+content-type: application/json
+
+###
+
+POST http://0.0.0.0:8000/product
+content-type: application/json
+
+{
+  "product": {
+    "product_id": "00000000-0000-0000-0000-000000000000",
+    "image_path": "",
+    "title": "",
+    "description": "",
+    "price": 0
+  }
+}
+
+###
+
+PUT  http://0.0.0.0:8000/product
+content-type: application/json
+
+{
+  "product": {
+    "product_id": "00000000-0000-0000-0000-000000000000",
+    "image_path": "",
+    "title": "",
+    "description": "",
+    "price": 0
+  }
+}
+
+###
+
+DELETE  http://0.0.0.0:8000/product
+content-type: application/json
+
+{
+  "product": {
+    "product_id": "00000000-0000-0000-0000-000000000000",
+    "image_path": "",
+    "title": "",
+    "description": "",
+    "price": 0
+  }
+}
+
+###
+
+GET  http://0.0.0.0:8000/orders
+content-type: application/json
+
+###
+
+POST  http://0.0.0.0:8000/order
+content-type: application/json
+
+{
+  "order": {
+    "order_id": "00000000-0000-0000-0000-000000000000",
+    "items": [
+      {
+        "product": {
+          "product_id": "00000000-0000-0000-0000-000000000000",
+          "image_path": "",
+          "title": "",
+          "description": "",
+          "price": 0
+        },
+        "quantity": 0
+      }
+    ]
+  }
+}
