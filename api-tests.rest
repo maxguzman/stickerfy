@@ -62,19 +62,16 @@ POST  http://0.0.0.0:8000/order
 content-type: application/json
 
 {
-  "order": {
-    "order_id": "00000000-0000-0000-0000-000000000000",
-    "items": [
-      {
-        "product": {
-          "product_id": "00000000-0000-0000-0000-000000000000",
-          "image_path": "",
-          "title": "",
-          "description": "",
-          "price": 0
-        },
-        "quantity": 0
-      }
-    ]
-  }
+	"items": [
+		{
+			"product": {
+				"productId": "00000000-0000-0000-0000-000000000000",
+				"title": "",
+				"imagePath": "",
+				"description": "",
+				"price": 0
+			},
+			"quantity": 0
+		},
+	]
 }
