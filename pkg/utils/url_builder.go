@@ -14,6 +14,12 @@ func URLBuilder(n string) (string, error) {
 			os.Getenv("REDIS_HOST"),
 			os.Getenv("REDIS_PORT"),
 		), nil
+	case "mongo":
+		return fmt.Sprintf(
+			"mongodb://%s:%s/?readPreference=primary&appname=stickerfy&ssl=false",
+			os.Getenv("MONGO_HOST"),
+			os.Getenv("MONGO_PORT"),
+		), nil
 	case "server":
 		return fmt.Sprintf(
 			"%s:%s",
