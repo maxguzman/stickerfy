@@ -13,7 +13,7 @@ type KafkaProducer struct {
 }
 
 // NewKafkaProducer instantiates the Kafka producer
-func NewKafkaProducer() *KafkaProducer {
+func NewKafkaProducer() EventProducer {
 	kafkaProducer, err := kafka.NewProducer(configs.KafkaConfig())
 	if err != nil {
 		fmt.Printf("Failed to create producer: %v", err)
@@ -63,7 +63,7 @@ type KafkaConsumer struct {
 }
 
 // NewKafkaConsumer instantiates the Kafka consumer
-func NewKafkaConsumer() *KafkaConsumer {
+func NewKafkaConsumer() EventConsumer {
 	kafkaConsumer, err := kafka.NewConsumer(configs.KafkaConfig())
 	if err != nil {
 		fmt.Printf("Failed to create consumer: %v", err)

@@ -14,7 +14,7 @@ type RedisClient struct {
 }
 
 // NewRedisClient instantiates the Redis client
-func NewRedisClient() *RedisClient {
+func NewRedisClient() Cache {
 	return &RedisClient{
 		Client: redis.NewClient(configs.RedisConfig()),
 	}
