@@ -4,7 +4,7 @@ APP_NAME = stickerfy
 BUILD_DIR = $(PWD)/build
 
 clean:
-	rm -rf ./build
+	rm -rf ./build cover.out
 
 critic:
 	gocritic check -enableAll ./...
