@@ -31,6 +31,13 @@ func NewProductController(productService services.ProductService) ProductControl
 }
 
 // GetAll returns all products
+// @Description Get all exists products.
+// @Summary get all exists products
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.Product
+// @Router /products [get]
 func (pc *productController) GetAll(c *fiber.Ctx) error {
 	products, err := pc.productService.GetAll()
 	if err != nil {
@@ -49,6 +56,14 @@ func (pc *productController) GetAll(c *fiber.Ctx) error {
 }
 
 // Get returns a product by id
+// @Description Get product by given ID.
+// @Summary get product by given ID
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Success 200 {object} models.Product
+// @Router /product/{id} [get]
 func (pc *productController) GetByID(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
@@ -76,6 +91,17 @@ func (pc *productController) GetByID(c *fiber.Ctx) error {
 }
 
 // New creates a new product
+// @Description Create a new product.
+// @Summary create a new product
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param image_path body string true "Image Path"
+// @Param title body string true "Title"
+// @Param description body string true "Description"
+// @Param price body number true "Price"
+// @Success 200 {object} models.Product
+// @Router /product [post]
 func (pc *productController) Post(c *fiber.Ctx) error {
 	var product models.Product
 	if err := c.BodyParser(&product); err != nil {
@@ -102,7 +128,19 @@ func (pc *productController) Post(c *fiber.Ctx) error {
 	})
 }
 
-// Update updates a product by id
+// Update updates a product
+// @Description Update product.
+// @Summary update product
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id body string true "Product ID"
+// @Param image_path body string true "Image Path"
+// @Param title body string true "Title"
+// @Param description body string true "Description"
+// @Param price body number true "Price"
+// @Success 202 {string} status "ok"
+// @Router /product [put]
 func (pc *productController) Update(c *fiber.Ctx) error {
 	var product models.Product
 	if err := c.BodyParser(&product); err != nil {
@@ -129,7 +167,19 @@ func (pc *productController) Update(c *fiber.Ctx) error {
 	})
 }
 
-// Delete deletes a product by id
+// Delete deletes a product
+// @Description Delete product.
+// @Summary delete product
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id body string true "Product ID"
+// @Param image_path body string true "Image Path"
+// @Param title body string true "Title"
+// @Param description body string true "Description"
+// @Param price body number true "Price"
+// @Success 204 {string} status "ok"
+// @Router /product [delete]
 func (pc *productController) Delete(c *fiber.Ctx) error {
 	var product models.Product
 	if err := c.BodyParser(&product); err != nil {

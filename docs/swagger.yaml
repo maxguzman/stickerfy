@@ -1,4 +1,51 @@
 basePath: /
+definitions:
+  models.Order:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/models.OrderItem'
+        type: array
+    required:
+    - id
+    - items
+    type: object
+  models.OrderItem:
+    properties:
+      product:
+        $ref: '#/definitions/models.Product'
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product
+    - quantity
+    type: object
+  models.Product:
+    properties:
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: string
+      image_path:
+        maxLength: 255
+        type: string
+      price:
+        minimum: 0
+        type: number
+      title:
+        maxLength: 255
+        type: string
+    required:
+    - description
+    - id
+    - image_path
+    - price
+    - title
+    type: object
 info:
   contact:
     email: max.guzman@icloud.com
@@ -10,7 +57,216 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Stickerfy API
   version: "1.0"
-paths: {}
+paths:
+  /order:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order.
+      parameters:
+      - description: Order Items
+        in: body
+        name: items
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.OrderItem'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+      summary: create a new order
+      tags:
+      - Order
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: Get all exists orders.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      summary: get all exists orders
+      tags:
+      - Order
+  /product:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product.
+      parameters:
+      - description: Product ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Image Path
+        in: body
+        name: image_path
+        required: true
+        schema:
+          type: string
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Price
+        in: body
+        name: price
+        required: true
+        schema:
+          type: number
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ok
+          schema:
+            type: string
+      summary: delete product
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Create a new product.
+      parameters:
+      - description: Image Path
+        in: body
+        name: image_path
+        required: true
+        schema:
+          type: string
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Price
+        in: body
+        name: price
+        required: true
+        schema:
+          type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: create a new product
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update product.
+      parameters:
+      - description: Product ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Image Path
+        in: body
+        name: image_path
+        required: true
+        schema:
+          type: string
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Price
+        in: body
+        name: price
+        required: true
+        schema:
+          type: number
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: ok
+          schema:
+            type: string
+      summary: update product
+      tags:
+      - Product
+  /product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get product by given ID.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: get product by given ID
+      tags:
+      - Product
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get all exists products.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      summary: get all exists products
+      tags:
+      - Product
 securityDefinitions:
   ApiKeyAuth:
     in: header
