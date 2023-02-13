@@ -10,10 +10,7 @@ import (
 
 // RedisConfig returns a redis config
 func RedisConfig() *redis.Options {
-	redisAddr, err := utils.URLBuilder("redis")
-	if err != nil {
-		panic(err)
-	}
+	redisAddr, _ := utils.URLBuilder("redis")
 	return &redis.Options{
 		Addr:     redisAddr,
 		Password: os.Getenv("REDIS_PASS"),
