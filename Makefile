@@ -49,7 +49,7 @@ docker.stickerfy: docker.stickerfy.build
 		-e IDLE_TIMEOUT=60 \
 		-e MONGO_USER="mongoadmin" \
 		-e MONGO_PASSWORD="secret" \
-		-e MONGO_HOST="0.0.0.0" \
+		-e MONGO_HOST="mongo" \
 		-e MONGO_PORT="27017" \
 		-e MONGO_DATABASE="stickerfy" \
 		-e KAFKA_BROKERS="0.0.0.0:9092" \
