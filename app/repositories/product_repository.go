@@ -6,6 +6,7 @@ import (
 	"stickerfy/pkg/platform/database"
 
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // ProductRepository is an interface for a product repository
@@ -18,7 +19,7 @@ type ProductRepository interface {
 }
 
 // productRepository is a implementation of ProductRepository
-type productRepository struct{
+type productRepository struct {
 	client database.Client
 }
 
@@ -31,7 +32,23 @@ func NewProductRepository(c database.Client) ProductRepository {
 
 // FindAll returns all products
 func (pr *productRepository) GetAll() ([]models.Product, error) {
-	return []models.Product{}, nil
+	var products []models.Product
+	collection := pr.client.Database("stickerfy").Collection("products")
+	cursor, err := collection.Find(nil, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(nil)
+
+	for cursor.Next(nil) {
+		var product models.Product
+		err := cursor.Decode(&product)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+	return products, nil
 }
 
 // Get returns a product by id

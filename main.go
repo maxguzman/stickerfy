@@ -1,20 +1,22 @@
 package main
 
 import (
+	"context"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
+	"stickerfy/pkg/middleware"
 	"stickerfy/pkg/platform/database"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
-	"stickerfy/pkg/middleware"
 
 	_ "stickerfy/docs"
 )
 
 var (
-	productRepository repositories.ProductRepository = database.NewMongoProductRepository()
-	orderRepository   repositories.OrderRepository   = database.NewMongoOrderRepository()
+	mongoClient       database.Client                = database.NewMongoClient(context.Background())
+	productRepository repositories.ProductRepository = repositories.NewProductRepository(mongoClient)
+	orderRepository   repositories.OrderRepository   = repositories.NewOrderRepository(mongoClient)
 	productService    services.ProductService        = services.NewProductService(productRepository)
 	orderService      services.OrderService          = services.NewOrderService(orderRepository)
 	productController controllers.ProductController  = controllers.NewProductController(productService)
