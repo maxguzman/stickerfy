@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"stickerfy/app/models"
 
 	"stickerfy/pkg/configs"
@@ -37,13 +38,13 @@ func NewProductRepository(c database.Client) ProductRepository {
 func (pr *productRepository) GetAll() ([]models.Product, error) {
 	var products []models.Product
 	col := pr.getCollection()
-	cursor, err := col.Find(nil, bson.M{})
+	cursor, err := col.Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(nil)
+	defer cursor.Close(context.TODO())
 
-	for cursor.Next(nil) {
+	for cursor.Next(context.TODO()) {
 		var product models.Product
 		err := cursor.Decode(&product)
 		if err != nil {
@@ -58,7 +59,7 @@ func (pr *productRepository) GetAll() ([]models.Product, error) {
 func (pr *productRepository) GetByID(id uuid.UUID) (models.Product, error) {
 	var product models.Product
 	col := pr.getCollection()
-	err := col.FindOne(nil, bson.M{"_id": id}).Decode(&product)
+	err := col.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&product)
 	if err != nil {
 		return models.Product{}, err
 	}
@@ -68,7 +69,7 @@ func (pr *productRepository) GetByID(id uuid.UUID) (models.Product, error) {
 // New creates a new product
 func (pr *productRepository) Post(product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.InsertOne(nil, product)
+	_, err := col.InsertOne(context.TODO(), product)
 	if err != nil {
 		return err
 	}
@@ -78,7 +79,7 @@ func (pr *productRepository) Post(product models.Product) error {
 // Update updates a product
 func (pr *productRepository) Update(product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.UpdateOne(nil, bson.M{"_id": product.ID}, bson.M{"$set": product})
+	_, err := col.UpdateOne(context.TODO(), bson.M{"_id": product.ID}, bson.M{"$set": product})
 	if err != nil {
 		return err
 	}
@@ -88,7 +89,7 @@ func (pr *productRepository) Update(product models.Product) error {
 // Delete deletes a product by id
 func (pr *productRepository) Delete(product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.DeleteOne(nil, bson.M{"_id": product.ID})
+	_, err := col.DeleteOne(context.TODO(), bson.M{"_id": product.ID})
 	if err != nil {
 		return err
 	}

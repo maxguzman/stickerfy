@@ -77,39 +77,11 @@ func (c *mongoCollection) InsertOne(ctx context.Context, document interface{}) (
 }
 
 // UpdateOne updates a document
-func (c *mongoCollection) UpdateOne(ctx context.Context, filter interface{}, update interface{}) (interface{}, error) {
+func (c *mongoCollection) UpdateOne(ctx context.Context, filter, update interface{}) (interface{}, error) {
 	return c.Collection.UpdateOne(ctx, filter, update)
 }
 
 // DeleteOne deletes a document
 func (c *mongoCollection) DeleteOne(ctx context.Context, filter interface{}) (interface{}, error) {
 	return c.Collection.DeleteOne(ctx, filter)
-}
-
-type mongoSingleResult struct {
-	*mongo.SingleResult
-}
-
-// Decode decodes a single result
-func (r *mongoSingleResult) Decode(val interface{}) error {
-	return r.SingleResult.Decode(val)
-}
-
-type mongoCursor struct {
-	*mongo.Cursor
-}
-
-// Next returns the next document
-func (c *mongoCursor) Next(ctx context.Context) bool {
-	return c.Cursor.Next(ctx)
-}
-
-// Decode decodes a document
-func (c *mongoCursor) Decode(val interface{}) error {
-	return c.Cursor.Decode(val)
-}
-
-// Close closes the cursor
-func (c *mongoCursor) Close(ctx context.Context) error {
-	return c.Cursor.Close(ctx)
 }

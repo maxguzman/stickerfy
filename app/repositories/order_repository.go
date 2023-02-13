@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"stickerfy/app/models"
 	"stickerfy/pkg/configs"
 	"stickerfy/pkg/platform/database"
@@ -32,13 +33,13 @@ func NewOrderRepository(c database.Client) OrderRepository {
 func (or *orderRepository) GetAll() ([]models.Order, error) {
 	var orders []models.Order
 	col := or.getCollection()
-	cursor, err := col.Find(nil, bson.M{})
+	cursor, err := col.Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(nil)
+	defer cursor.Close(context.TODO())
 
-	for cursor.Next(nil) {
+	for cursor.Next(context.TODO()) {
 		var order models.Order
 		err := cursor.Decode(&order)
 		if err != nil {
@@ -53,7 +54,7 @@ func (or *orderRepository) GetAll() ([]models.Order, error) {
 // Post creates a new order
 func (or *orderRepository) Post(order models.Order) error {
 	col := or.getCollection()
-	_, err := col.InsertOne(nil, order)
+	_, err := col.InsertOne(context.TODO(), order)
 	if err != nil {
 		return err
 	}
