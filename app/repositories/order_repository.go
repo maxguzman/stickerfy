@@ -2,8 +2,13 @@ package repositories
 
 import (
 	"stickerfy/app/models"
+	"stickerfy/pkg/configs"
 	"stickerfy/pkg/platform/database"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
+
+const ordersCollection = "orders"
 
 // OrderRepository is an interface for an order repository
 type OrderRepository interface {
@@ -25,10 +30,37 @@ func NewOrderRepository(c database.Client) OrderRepository {
 
 // GetAll returns all orders
 func (or *orderRepository) GetAll() ([]models.Order, error) {
-	return []models.Order{}, nil
+	var orders []models.Order
+	col := or.getCollection()
+	cursor, err := col.Find(nil, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(nil)
+
+	for cursor.Next(nil) {
+		var order models.Order
+		err := cursor.Decode(&order)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
 }
 
 // Post creates a new order
 func (or *orderRepository) Post(order models.Order) error {
+	col := or.getCollection()
+	_, err := col.InsertOne(nil, order)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+func (or *orderRepository) getCollection() database.Collection {
+	mc := configs.NewMongoConfig()
+	return or.client.Database(mc.GetDatabase()).Collection(ordersCollection)
 }

@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const collection = "products"
+const productsCollection = "products"
 
 // ProductRepository is an interface for a product repository
 type ProductRepository interface {
@@ -97,5 +97,5 @@ func (pr *productRepository) Delete(product models.Product) error {
 
 func (pr *productRepository) getCollection()database.Collection {
 	mc := configs.NewMongoConfig()
-	return pr.client.Database(mc.GetDatabase()).Collection(collection)
+	return pr.client.Database(mc.GetDatabase()).Collection(productsCollection)
 }

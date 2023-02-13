@@ -6,6 +6,7 @@ import (
 	"stickerfy/app/services"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // OrderController is an interface for an order controller
@@ -47,7 +48,14 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 // Post creates a new order
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
-
+	if err := c.BodyParser(&order); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"order": nil,
+			"error": true,
+			"msg":   "invalid order",
+		})
+	}
+	order.ID = uuid.New()
 	err := oc.orderService.Post(order)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
