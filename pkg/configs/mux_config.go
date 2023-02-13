@@ -14,13 +14,14 @@ import (
 func MuxConfig(router *mux.Router) *http.Server {
 	writeTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("WRITE_TIMEOUT"))
 	readTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("READ_TIMEOUT"))
+	idleTimeoutSecondsCount, _ := strconv.Atoi(os.Getenv("IDLE_TIMEOUT"))
 	addr, _ := utils.URLBuilder("server")
 
 	return &http.Server{
 		Addr:         addr,
 		WriteTimeout: time.Second * time.Duration(writeTimeoutSecondsCount),
 		ReadTimeout:  time.Second * time.Duration(readTimeoutSecondsCount),
-		IdleTimeout:  time.Second * 60,
+		IdleTimeout:  time.Second * time.Duration(idleTimeoutSecondsCount),
 		Handler:      router,
 	}
 }
