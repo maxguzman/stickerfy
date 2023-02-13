@@ -42,12 +42,17 @@ docker.stickerfy: docker.stickerfy.build
 		--name stickerfy \
 		--network dev-network \
 		-p 8000:8000 \
-		-e SERVER_host="" \
+		-e SERVER_HOST="0.0.0.0" \
 		-e SERVER_PORT="8000" \
-		-e READ_TIMEOUT=15 \
+		-e READ_TIMEOUT=60 \
 		-e WRITE_TIMEOUT=15 \
 		-e IDLE_TIMEOUT=60 \
-		-e KAFKA_BROKERS="localhost:9092" \
+		-e MONGO_USER="mongoadmin" \
+		-e MONGO_PASSWORD="secret" \
+		-e MONGO_HOST="0.0.0.0" \
+		-e MONGO_PORT="27017" \
+		-e MONGO_DATABASE="stickerfy" \
+		-e KAFKA_BROKERS="0.0.0.0:9092" \
 		-e TOPIC_NAME="stickerfy_order_added" \
 		stickerfy
 

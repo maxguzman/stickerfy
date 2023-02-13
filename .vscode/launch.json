@@ -18,7 +18,7 @@
         "MONGO_HOST": "0.0.0.0",
         "MONGO_PORT": "27017",
         "MONGO_DATABASE": "stickerfy",
-        "KAFKA_BROKERS": "localhost:9092",
+        "KAFKA_BROKERS": "0.0.0.0:9092",
         "TOPIC_NAME": "stickerfy_order_added",
       },
       "args": []
