@@ -4,8 +4,8 @@ import "github.com/google/uuid"
 
 // Order represents an order
 type Order struct {
-	OrderID uuid.UUID   `json:"order_id" validate:"required,uuid"`
-	Items   []OrderItem `json:"items" validate:"required,dive"`
+	ID    uuid.UUID   `json:"id" validate:"required,uuid"`
+	Items []OrderItem `json:"items" validate:"required,dive"`
 }
 
 // OrderItem represents an item in an order

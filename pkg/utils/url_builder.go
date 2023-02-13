@@ -16,7 +16,7 @@ func URLBuilder(n string) (string, error) {
 		), nil
 	case "mongo":
 		return fmt.Sprintf(
-			"mongodb://%s:%s@%s:%s",
+			"mongodb://%s:%s@%s:%s/?authSource=admin&readPreference=primary&appname=Stickerfy&directConnection=true&ssl=false",
 			os.Getenv("MONGO_USER"),
 			os.Getenv("MONGO_PASSWORD"),
 			os.Getenv("MONGO_HOST"),

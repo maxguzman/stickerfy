@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"stickerfy/pkg/utils"
+	"stickerfy/pkg/configs"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,7 +16,7 @@ type mongoClient struct {
 
 // NewMongoClient creates a new mongo client
 func NewMongoClient(ctx context.Context) Client {
-	uri, _ := utils.URLBuilder("mongo")
+	uri := configs.NewMongoConfig().GetURI()
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)

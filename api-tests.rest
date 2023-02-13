@@ -3,7 +3,7 @@ content-type: application/json
 
 ###
 
-GET http://0.0.0.0:8000/product/04cfe1c9-f77a-443e-a5cc-38cee4b1c9ac
+GET http://0.0.0.0:8000/product/cedca7d9-a069-4dfd-8e4c-1cf3dda74779
 content-type: application/json
 
 ###
@@ -12,13 +12,10 @@ POST http://0.0.0.0:8000/product
 content-type: application/json
 
 {
-  "product": {
-    "product_id": "00000000-0000-0000-0000-000000000000",
-    "image_path": "",
-    "title": "",
-    "description": "",
-    "price": 0
-  }
+	"title": "Happy",
+	"image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
+	"description": "Very happy sticker!",
+	"price": 5.5
 }
 
 ###
@@ -27,13 +24,11 @@ PUT  http://0.0.0.0:8000/product
 content-type: application/json
 
 {
-  "product": {
-    "product_id": "00000000-0000-0000-0000-000000000000",
-    "image_path": "",
-    "title": "",
-    "description": "",
-    "price": 0
-  }
+  "id": "ad64f2c5-8799-40e2-86d7-686b5f40e989",
+  "image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
+  "title": "Happy",
+  "description": "Very happy sticker!",
+  "price": 7.5
 }
 
 ###
@@ -42,13 +37,11 @@ DELETE  http://0.0.0.0:8000/product
 content-type: application/json
 
 {
-  "product": {
-    "product_id": "00000000-0000-0000-0000-000000000000",
-    "image_path": "",
-    "title": "",
-    "description": "",
-    "price": 0
-  }
+  "id": "ad64f2c5-8799-40e2-86d7-686b5f40e989",
+  "image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
+  "title": "Happy",
+  "description": "Very happy sticker!",
+  "price": 7.5
 }
 
 ###
@@ -62,14 +55,14 @@ POST  http://0.0.0.0:8000/order
 content-type: application/json
 
 {
-	"items": [
+  "items": [
 		{
 			"product": {
-				"productId": "00000000-0000-0000-0000-000000000000",
-				"title": "",
-				"imagePath": "",
-				"description": "",
-				"price": 0
+        "id": "ad64f2c5-8799-40e2-86d7-686b5f40e989",
+        "image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
+        "title": "Happy",
+        "description": "Very happy sticker!",
+        "price": 7.5
 			},
 			"quantity": 0
 		},

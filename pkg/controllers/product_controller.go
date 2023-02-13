@@ -85,7 +85,7 @@ func (pc *productController) Post(c *fiber.Ctx) error {
 			"product": nil,
 		})
 	}
-
+	product.ID = uuid.New()
 	err := pc.productService.Post(product)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
