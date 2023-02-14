@@ -96,7 +96,7 @@ func (pr *productRepository) Delete(product models.Product) error {
 	return nil
 }
 
-func (pr *productRepository) getCollection()database.Collection {
+func (pr *productRepository) getCollection() database.Collection {
 	mc := configs.NewMongoConfig()
 	return pr.client.Database(mc.GetDatabase()).Collection(productsCollection)
 }
