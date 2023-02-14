@@ -1,4 +1,5 @@
 name: golangci-lint
+run-name: ${{ github.actor }} is checking code with golangci-lint
 
 on: [push, pull_request]
 
@@ -11,6 +12,6 @@ jobs:
         with:
           go-version: '1.18'
       - uses: actions/checkout@v3
+      - run: go mod tidy
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
-
