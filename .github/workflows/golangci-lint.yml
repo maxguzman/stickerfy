@@ -1,5 +1,5 @@
 name: golangci-lint
-run-name: ${{ github.actor }} is checking code with golangci-lint
+run-name: Code linting with golangci-lint
 
 on: [push, pull_request]
 
