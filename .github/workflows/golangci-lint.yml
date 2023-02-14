@@ -1,5 +1,5 @@
-name: Run golangci-lint
-run-name: Code linting with golangci-lint
+name: Run pre-build checks
+run-name: Code audit, security scanner and linting
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
       - main
 
 jobs:
-  golangci:
-    name: lint
+  prebuild-chechs:
+    name: prebuild-chechs
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
@@ -28,6 +28,13 @@ jobs:
       - name: Install dependencies
         run: |
           go mod download
+      - name: Run code audit
+        run: |
+          gocritic check -enableAll ./...
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
       - name: golangci-lint
         run: |
           golangci-lint run ./... --timeout 5m
