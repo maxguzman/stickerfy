@@ -116,4 +116,4 @@ docker.stop.kafka:
 docker.scan:
 	docker scan stickerfy
 
-refresh: docker.stop.stickerfy docker.stickerfy
+refresh: docker.stop.stickerfy swag docker.stickerfy
