@@ -1,18 +1,29 @@
-name: golangci-lint
-run-name: Code linting with golangci-lint
+name: Run golangci-lint
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
     steps:
-      - uses: actions/setup-go@v3
+      - name: Set go environment
+        uses: actions/setup-go@v3
         with:
           go-version: '1.19'
-      - uses: actions/checkout@v3
-      - run: go get -u
-      - run: export GO111MODULE=on
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3.4.0
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.42.1
+          skip-go-installation: true
+          args: --timeout 5m
