@@ -1,4 +1,5 @@
 name: Run golangci-lint
+run-name: Code linting with golangci-lint
 
 on:
   push:
