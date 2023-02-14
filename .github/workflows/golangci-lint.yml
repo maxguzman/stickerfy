@@ -12,6 +12,7 @@ jobs:
         with:
           go-version: '1.19'
       - uses: actions/checkout@v3
-      - run: go mod tidy
+      - run: go get -u
+      - run: export GO111MODULE=on
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
