@@ -1,5 +1,5 @@
-name: Run golangci-lint
-run-name: Code linting with golangci-lint
+name: Run pre-build checks
+run-name: Code audit, security scanner and linting
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
       - main
 
 jobs:
-  golangci:
-    name: lint
+  prebuild-chechs:
+    name: prebuild-chechs
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
@@ -22,12 +22,22 @@ jobs:
           go-version: '1.19'
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
-      - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.1
       - name: Install dependencies
         run: |
           go mod download
+      - name: Install go-critic
+        run: |
+          go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+      - name: Run code audit
+        run: |
+          gocritic check -enableAll ./...
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.1
       - name: golangci-lint
         run: |
           golangci-lint run ./... --timeout 5m
