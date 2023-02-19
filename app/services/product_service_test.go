@@ -8,7 +8,7 @@ import (
 
 	"stickerfy/app/models"
 	"stickerfy/app/services"
-	mocks "stickerfy/pkg/mocks/repositories"
+	mocks "stickerfy/test/mocks/repositories"
 )
 
 // TestGetAllProducts tests ProductService.GetAll

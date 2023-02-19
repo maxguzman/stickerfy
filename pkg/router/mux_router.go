@@ -20,7 +20,6 @@ func NewMuxRouter() Router {
 	return &muxRouter{mux: mux.NewRouter()}
 }
 
-// TODO: Implement Get, Post, Put, and Delete
 // Get is a function that adds a new GET route
 func (mr *muxRouter) Get(path string, f func(*fiber.Ctx) error) fiber.Router {
 	mr.mux.HandleFunc(path, adaptor.FiberHandlerFunc(f)).Methods(http.MethodGet)

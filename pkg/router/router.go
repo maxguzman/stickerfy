@@ -1,6 +1,8 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 // Router is an interface for a router
 type Router interface {

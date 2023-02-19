@@ -7,7 +7,7 @@ import (
 
 	"stickerfy/app/models"
 	"stickerfy/app/services"
-	"stickerfy/pkg/mocks/repositories"
+	mocks "stickerfy/test/mocks/repositories"
 )
 
 // TestGetAllOrders tests OrderService.GetAll
