@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"stickerfy/app/models"
 	"stickerfy/pkg/controllers"
-	router "stickerfy/pkg/router"
+	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
 	mock_services "stickerfy/test/mocks/services"
 
