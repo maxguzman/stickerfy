@@ -3,6 +3,7 @@ package controllers_test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"stickerfy/app/models"
@@ -19,58 +20,104 @@ import (
 
 // TestOrderController_GetAll tests the GetAll method of the OrderController
 func TestOrderController_GetAll(t *testing.T) {
-	mockOrderService := mock_services.NewOrderService(t)
-	mockOrderService.On("GetAll").Return([]models.Order{}, nil)
-	orderController := controllers.NewOrderController(mockOrderService)
+	t.Parallel()
 
-	fr := router.NewFiberRouter()
-	routes.OrderRoutes(fr, orderController)
+	tests := []struct {
+		description        string
+		serviceError       error
+		expectedStatusCode int
+	}{
+		{
+			description:        "should return 200 and orders",
+			serviceError:       nil,
+			expectedStatusCode: http.StatusOK,
+		},
+		{
+			description:        "should return 500 and error",
+			serviceError:       errors.New("error"),
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+	}
 
-	req := httptest.NewRequest(http.MethodGet, "/orders", nil)
-	req.Header.Set("Content-Type", "application/json")
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			mockOrderService := mock_services.NewOrderService(t)
+			mockOrderService.On("GetAll").Return([]models.Order{}, test.serviceError)
+			orderController := controllers.NewOrderController(mockOrderService)
 
-	res, err := fr.Test(req)
+			fr := router.NewFiberRouter()
+			routes.OrderRoutes(fr, orderController)
 
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, res.StatusCode)
+			req := httptest.NewRequest(http.MethodGet, "/orders", nil)
+			req.Header.Set("Content-Type", "application/json")
 
-	mockOrderService.AssertExpectations(t)
+			res, err := fr.Test(req)
+
+			assert.Nil(t, err)
+			assert.Equal(t, test.expectedStatusCode, res.StatusCode)
+
+			mockOrderService.AssertExpectations(t)
+		})
+	}
 }
 
 // TestOrderController_Post tests the Post method of the OrderController
 func TestOrderController_Post(t *testing.T) {
-	body := new(bytes.Buffer)
-	mockOrder := models.Order{
-		Items: []models.OrderItem{
-			{
-				Product: models.Product{
-					ID:          uuid.New(),
-					Description: "Test Product",
-					Price:       10.0,
-					ImagePath:   "test.png",
-					Title:       "Test Product",
-				},
-				Quantity: 1,
-			},
+	t.Parallel()
+
+	tests := []struct {
+		description        string
+		serviceError       error
+		expectedStatusCode int
+	}{
+		{
+			description:        "should return 201 and order",
+			serviceError:       nil,
+			expectedStatusCode: http.StatusCreated,
+		},
+		{
+			description:        "should return 500 and error",
+			serviceError:       errors.New("error"),
+			expectedStatusCode: http.StatusInternalServerError,
 		},
 	}
-	err := json.NewEncoder(body).Encode(&mockOrder)
-	assert.Nil(t, err)
 
-	mockOrderService := mock_services.NewOrderService(t)
-	mockOrderService.On("Post", mockOrder).Return(nil)
-	orderController := controllers.NewOrderController(mockOrderService)
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			body := new(bytes.Buffer)
+			mockOrder := models.Order{
+				Items: []models.OrderItem{
+					{
+						Product: models.Product{
+							ID:          uuid.New(),
+							Description: "Test Product",
+							Price:       10.0,
+							ImagePath:   "test.png",
+							Title:       "Test Product",
+						},
+						Quantity: 1,
+					},
+				},
+			}
+			err := json.NewEncoder(body).Encode(&mockOrder)
+			assert.Nil(t, err)
 
-	fr := router.NewFiberRouter()
-	routes.OrderRoutes(fr, orderController)
+			mockOrderService := mock_services.NewOrderService(t)
+			mockOrderService.On("Post", mockOrder).Return(test.serviceError)
+			orderController := controllers.NewOrderController(mockOrderService)
 
-	req := httptest.NewRequest(http.MethodPost, "/order", body)
-	req.Header.Set("Content-Type", "application/json")
+			fr := router.NewFiberRouter()
+			routes.OrderRoutes(fr, orderController)
 
-	res, err := fr.Test(req)
+			req := httptest.NewRequest(http.MethodPost, "/order", body)
+			req.Header.Set("Content-Type", "application/json")
 
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusCreated, res.StatusCode)
+			res, err := fr.Test(req)
 
-	mockOrderService.AssertExpectations(t)
+			assert.Nil(t, err)
+			assert.Equal(t, test.expectedStatusCode, res.StatusCode)
+
+			mockOrderService.AssertExpectations(t)
+		})
+	}
 }
