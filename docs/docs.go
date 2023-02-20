@@ -38,15 +38,12 @@ const docTemplate = `{
                 "summary": "create a new order",
                 "parameters": [
                     {
-                        "description": "Order Items",
-                        "name": "items",
+                        "description": "Order",
+                        "name": "order",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.OrderItem"
-                            }
+                            "$ref": "#/definitions/models.Order"
                         }
                     }
                 ],

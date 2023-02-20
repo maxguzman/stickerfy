@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,4 +16,5 @@ type Router interface {
 	Use(f func(*fiber.Ctx) error) fiber.Router
 	Serve()
 	ServeWithGracefulShutdown()
+	Test(req *http.Request, msTimeout ...int) (*http.Response, error)
 }

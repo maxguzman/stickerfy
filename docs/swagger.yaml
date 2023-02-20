@@ -64,14 +64,12 @@ paths:
       - application/json
       description: Create a new order.
       parameters:
-      - description: Order Items
+      - description: Order
         in: body
-        name: items
+        name: order
         required: true
         schema:
-          items:
-            $ref: '#/definitions/models.OrderItem'
-          type: array
+          $ref: '#/definitions/models.Order'
       produces:
       - application/json
       responses:

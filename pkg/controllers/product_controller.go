@@ -104,6 +104,7 @@ func (pc *productController) GetByID(c *fiber.Ctx) error {
 // @Router /product [post]
 func (pc *productController) Post(c *fiber.Ctx) error {
 	var product models.Product
+	product.ID = uuid.New()
 	if err := c.BodyParser(&product); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -111,7 +112,6 @@ func (pc *productController) Post(c *fiber.Ctx) error {
 			"product": nil,
 		})
 	}
-	product.ID = uuid.New()
 	err := pc.productService.Post(product)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{

@@ -12,16 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const productsCollection = "products"
-
-// productRepository is a implementation of ProductRepository
+// mongoProductRepository is a implementation of ProductRepository
 type mongoProductRepository struct {
 	*mongo.Client
+	collection string
 }
 
-// NewProductRepository creates a new ProductRepository
-func NewMongoProductRepository(ctx context.Context) ProductRepository {
-		uri := configs.NewMongoConfig().GetURI()
+// NewMongoProductRepository creates a new ProductRepository
+func NewMongoProductRepository(ctx context.Context, collection string) ProductRepository {
+	uri := configs.NewMongoConfig().GetURI()
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
@@ -31,7 +30,7 @@ func NewMongoProductRepository(ctx context.Context) ProductRepository {
 	if err != nil {
 		panic(err)
 	}
-	return &mongoProductRepository{client}
+	return &mongoProductRepository{client, collection}
 }
 
 // FindAll returns all products
@@ -97,5 +96,5 @@ func (pr *mongoProductRepository) Delete(product models.Product) error {
 }
 
 func (pr *mongoProductRepository) getCollection() *mongo.Collection {
-	return pr.Database(configs.NewMongoConfig().Database).Collection(productsCollection)
+	return pr.Database(configs.NewMongoConfig().Database).Collection(pr.collection)
 }

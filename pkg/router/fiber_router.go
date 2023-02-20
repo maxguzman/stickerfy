@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"stickerfy/pkg/configs"
 	"stickerfy/pkg/utils"
 
@@ -67,4 +68,9 @@ func (fr *fiberRouter) ServeWithGracefulShutdown() {
 	if err := fr.app.Listen(addr); err != nil {
 		panic(err)
 	}
+}
+
+// Test is a method for testing the server
+func (fr *fiberRouter) Test(req *http.Request, msTimeout ...int) (*http.Response, error) {
+	return fr.app.Test(req, msTimeout...)
 }

@@ -8,12 +8,12 @@ import (
 
 	"stickerfy/app/models"
 	"stickerfy/app/services"
-	mocks "stickerfy/test/mocks/repositories"
+	mock_repositories "stickerfy/test/mocks/repositories"
 )
 
 // TestGetAllProducts tests ProductService.GetAll
 func TestGetAllProducts(t *testing.T) {
-	mockProductRepository := new(mocks.ProductRepository)
+	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("GetAll").Return([]models.Product{}, nil)
 
 	productService := services.NewProductService(mockProductRepository)
@@ -26,7 +26,7 @@ func TestGetAllProducts(t *testing.T) {
 // TestGetProductByID tests ProductService.GetByID
 func TestGetProductByID(t *testing.T) {
 	mockId := uuid.New()
-	mockProductRepository := new(mocks.ProductRepository)
+	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("GetByID", mockId).Return(models.Product{}, nil)
 
 	productService := services.NewProductService(mockProductRepository)
@@ -38,7 +38,7 @@ func TestGetProductByID(t *testing.T) {
 
 // TestPostProduct tests ProductService.Post
 func TestPostProduct(t *testing.T) {
-	mockProductRepository := new(mocks.ProductRepository)
+	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Post", models.Product{}).Return(nil)
 
 	productService := services.NewProductService(mockProductRepository)
@@ -49,7 +49,7 @@ func TestPostProduct(t *testing.T) {
 
 // TestUpdateProduct tests ProductService.Update
 func TestUpdateProduct(t *testing.T) {
-	mockProductRepository := new(mocks.ProductRepository)
+	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Update", models.Product{}).Return(nil)
 
 	productService := services.NewProductService(mockProductRepository)
@@ -60,7 +60,7 @@ func TestUpdateProduct(t *testing.T) {
 
 // TestDeleteProduct tests ProductService.Delete
 func TestDeleteProduct(t *testing.T) {
-	mockProductRepository := new(mocks.ProductRepository)
+	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Delete", models.Product{}).Return(nil)
 
 	productService := services.NewProductService(mockProductRepository)

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
@@ -59,20 +58,19 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 // @Tags Order
 // @Accept json
 // @Produce json
-// @Param items body []models.OrderItem true "Order Items"
+// @Param order body models.Order true "Order"
 // @Success 200 {object} models.Order
 // @Router /order [post]
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
+	order.ID = uuid.New()
 	if err := c.BodyParser(&order); err != nil {
-		fmt.Println(err)
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"order": nil,
 			"error": true,
 			"msg":   "invalid order",
 		})
 	}
-	order.ID = uuid.New()
 	err := oc.orderService.Post(order)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
@@ -82,7 +80,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"order": order,
 		"error": false,
 		"msg":   nil,

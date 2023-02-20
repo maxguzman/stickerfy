@@ -81,3 +81,8 @@ func (mr *muxRouter) ServeWithGracefulShutdown() {
 		panic(err)
 	}
 }
+
+// Test is a method for testing the server
+func (mr *muxRouter) Test(req *http.Request, msTimeout ...int) (*http.Response, error) {
+	return nil, nil
+}

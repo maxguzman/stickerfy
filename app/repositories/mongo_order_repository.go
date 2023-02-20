@@ -10,15 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const ordersCollection = "orders"
-
 // mongoOrderRepository is a implementation of OrderRepository
-type mongoOrderRepository struct{
+type mongoOrderRepository struct {
 	*mongo.Client
+	collection string
 }
 
-// NewOrderRepository creates a new OrderRepository
-func NewMongoOrderRepository(ctx context.Context) OrderRepository {
+// NewMongoOrderRepository creates a new OrderRepository
+func NewMongoOrderRepository(ctx context.Context, collection string) OrderRepository {
 	uri := configs.NewMongoConfig().GetURI()
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -29,7 +28,7 @@ func NewMongoOrderRepository(ctx context.Context) OrderRepository {
 	if err != nil {
 		panic(err)
 	}
-	return &mongoOrderRepository{client}
+	return &mongoOrderRepository{client, collection}
 }
 
 // GetAll returns all orders
@@ -50,7 +49,6 @@ func (or *mongoOrderRepository) GetAll() ([]models.Order, error) {
 		}
 		orders = append(orders, order)
 	}
-
 	return orders, nil
 }
 
@@ -65,5 +63,5 @@ func (or *mongoOrderRepository) Post(order models.Order) error {
 }
 
 func (or *mongoOrderRepository) getCollection() *mongo.Collection {
-	return or.Database(configs.NewMongoConfig().GetDatabase()).Collection(ordersCollection)
+	return or.Database(configs.NewMongoConfig().GetDatabase()).Collection(or.collection)
 }

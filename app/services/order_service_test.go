@@ -7,12 +7,12 @@ import (
 
 	"stickerfy/app/models"
 	"stickerfy/app/services"
-	mocks "stickerfy/test/mocks/repositories"
+	mock_repositories "stickerfy/test/mocks/repositories"
 )
 
 // TestGetAllOrders tests OrderService.GetAll
 func TestGetAllOrders(t *testing.T) {
-	mockOrderRepository := new(mocks.OrderRepository)
+	mockOrderRepository := new(mock_repositories.OrderRepository)
 	mockOrderRepository.On("GetAll").Return([]models.Order{}, nil)
 
 	orderService := services.NewOrderService(mockOrderRepository)
@@ -24,7 +24,7 @@ func TestGetAllOrders(t *testing.T) {
 
 // TestPost tests OrderService.Post
 func TestPostOrder(t *testing.T) {
-	mockOrderRepository := new(mocks.OrderRepository)
+	mockOrderRepository := new(mock_repositories.OrderRepository)
 	mockOrderRepository.On("Post", models.Order{}).Return(nil)
 
 	orderService := services.NewOrderService(mockOrderRepository)
