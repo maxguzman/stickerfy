@@ -2,6 +2,8 @@ package router
 
 import (
 	"net/http"
+	"os"
+	"os/signal"
 	"stickerfy/pkg/configs"
 	"stickerfy/pkg/utils"
 
@@ -61,13 +63,30 @@ func (fr *fiberRouter) Serve() {
 
 // ServeWithGracefulShutdown is a method for running the server with graceful shutdown
 func (fr *fiberRouter) ServeWithGracefulShutdown() {
+	idleConnsClosed := make(chan struct{})
+
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		if err := fr.app.Shutdown(); err != nil {
+			panic(err)
+		}
+
+		close(idleConnsClosed)
+	}()
+
 	addr, err := utils.URLBuilder("server")
 	if err != nil {
 		panic(err)
 	}
+
 	if err := fr.app.Listen(addr); err != nil {
 		panic(err)
 	}
+
+	<-idleConnsClosed
 }
 
 // Test is a method for testing the server
