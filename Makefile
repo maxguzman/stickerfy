@@ -42,6 +42,7 @@ docker.stickerfy: docker.stickerfy.build
 		--name stickerfy \
 		--network dev-network \
 		-p 8000:8000 \
+		-e ENV="dev" \
 		-e SERVER_HOST="0.0.0.0" \
 		-e SERVER_PORT="8000" \
 		-e READ_TIMEOUT=60 \

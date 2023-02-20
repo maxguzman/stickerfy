@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
@@ -12,9 +13,14 @@ import (
 	_ "stickerfy/docs"
 )
 
+const (
+	productsCollection string = "products"
+	ordersCollection   string = "orders"
+)
+
 var (
-	productRepository repositories.ProductRepository = repositories.NewMongoProductRepository(context.Background())
-	orderRepository   repositories.OrderRepository   = repositories.NewMongoOrderRepository(context.Background())
+	productRepository repositories.ProductRepository = repositories.NewMongoProductRepository(context.Background(), productsCollection)
+	orderRepository   repositories.OrderRepository   = repositories.NewMongoOrderRepository(context.Background(), ordersCollection)
 	productService    services.ProductService        = services.NewProductService(productRepository)
 	orderService      services.OrderService          = services.NewOrderService(orderRepository)
 	productController controllers.ProductController  = controllers.NewProductController(productService)
@@ -40,5 +46,10 @@ func main() {
 	routes.ProductRoutes(httpRouter, productController)
 	routes.OrderRoutes(httpRouter, orderController)
 	routes.NotFoundRoute(httpRouter)
-	httpRouter.Serve()
+
+	if os.Getenv("ENV") == "production" {
+		httpRouter.ServeWithGracefulShutdown()
+	} else {
+		httpRouter.Serve()
+	}
 }
