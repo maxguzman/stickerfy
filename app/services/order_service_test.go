@@ -12,6 +12,7 @@ import (
 
 // TestGetAllOrders tests OrderService.GetAll
 func TestGetAllOrders(t *testing.T) {
+	t.Parallel()
 	mockOrderRepository := new(mock_repositories.OrderRepository)
 	mockOrderRepository.On("GetAll").Return([]models.Order{}, nil)
 
@@ -24,6 +25,7 @@ func TestGetAllOrders(t *testing.T) {
 
 // TestPost tests OrderService.Post
 func TestPostOrder(t *testing.T) {
+	t.Parallel()
 	mockOrderRepository := new(mock_repositories.OrderRepository)
 	mockOrderRepository.On("Post", models.Order{}).Return(nil)
 

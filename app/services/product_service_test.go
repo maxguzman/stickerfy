@@ -13,6 +13,7 @@ import (
 
 // TestGetAllProducts tests ProductService.GetAll
 func TestGetAllProducts(t *testing.T) {
+	t.Parallel()
 	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("GetAll").Return([]models.Product{}, nil)
 
@@ -25,6 +26,7 @@ func TestGetAllProducts(t *testing.T) {
 
 // TestGetProductByID tests ProductService.GetByID
 func TestGetProductByID(t *testing.T) {
+	t.Parallel()
 	mockId := uuid.New()
 	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("GetByID", mockId).Return(models.Product{}, nil)
@@ -38,6 +40,7 @@ func TestGetProductByID(t *testing.T) {
 
 // TestPostProduct tests ProductService.Post
 func TestPostProduct(t *testing.T) {
+	t.Parallel()
 	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Post", models.Product{}).Return(nil)
 
@@ -49,6 +52,7 @@ func TestPostProduct(t *testing.T) {
 
 // TestUpdateProduct tests ProductService.Update
 func TestUpdateProduct(t *testing.T) {
+	t.Parallel()
 	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Update", models.Product{}).Return(nil)
 
@@ -60,6 +64,7 @@ func TestUpdateProduct(t *testing.T) {
 
 // TestDeleteProduct tests ProductService.Delete
 func TestDeleteProduct(t *testing.T) {
+	t.Parallel()
 	mockProductRepository := mock_repositories.NewProductRepository(t)
 	mockProductRepository.On("Delete", models.Product{}).Return(nil)
 
