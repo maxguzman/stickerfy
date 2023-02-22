@@ -13,7 +13,7 @@ func RedisConfig() *redis.Options {
 	redisAddr, _ := utils.URLBuilder("redis")
 	return &redis.Options{
 		Addr:     redisAddr,
-		Password: os.Getenv("REDIS_PASS"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	}
 }

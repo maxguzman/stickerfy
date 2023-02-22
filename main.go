@@ -7,6 +7,7 @@ import (
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
 	"stickerfy/pkg/middleware"
+	"stickerfy/pkg/platform/cache"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
 
@@ -23,7 +24,8 @@ var (
 	orderRepository   repositories.OrderRepository   = repositories.NewMongoOrderRepository(context.Background(), ordersCollection)
 	productService    services.ProductService        = services.NewProductService(productRepository)
 	orderService      services.OrderService          = services.NewOrderService(orderRepository)
-	productController controllers.ProductController  = controllers.NewProductController(productService)
+	productCache      cache.Cache                    = cache.NewRedisClient()
+	productController controllers.ProductController  = controllers.NewProductController(productService, productCache)
 	orderController   controllers.OrderController    = controllers.NewOrderController(orderService)
 	httpRouter        router.Router                  = router.NewFiberRouter()
 )

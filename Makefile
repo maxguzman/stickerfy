@@ -53,6 +53,9 @@ docker.stickerfy: docker.stickerfy.build
 		-e MONGO_HOST="mongo" \
 		-e MONGO_PORT="27017" \
 		-e MONGO_DATABASE="stickerfy" \
+		-e REDIS_HOST="redis" \
+		-e REDIS_PORT="6379" \
+		-e REDIS_PASSWORD="secret" \
 		-e KAFKA_BROKERS="0.0.0.0:9092" \
 		-e TOPIC_NAME="stickerfy_order_added" \
 		stickerfy
@@ -62,7 +65,8 @@ docker.redis:
 		--name redis \
 		--network dev-network \
 		-p 6379:6379 \
-		redis
+		redis \
+		-- requirepass "secret"
 
 docker.mongo:
 	docker run --rm -d \

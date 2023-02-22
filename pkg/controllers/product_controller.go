@@ -1,10 +1,16 @@
 package controllers
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
+	"stickerfy/pkg/platform/cache"
+	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -21,12 +27,14 @@ type ProductController interface {
 // productController is a implementation of ProductController
 type productController struct {
 	productService services.ProductService
+	productsCache  cache.Cache
 }
 
 // NewProductController creates a new ProductController
-func NewProductController(productService services.ProductService) ProductController {
+func NewProductController(productService services.ProductService, productCache cache.Cache) ProductController {
 	return &productController{
 		productService: productService,
+		productsCache:  productCache,
 	}
 }
 
@@ -39,12 +47,52 @@ func NewProductController(productService services.ProductService) ProductControl
 // @Success 200 {array} models.Product
 // @Router /products [get]
 func (pc *productController) GetAll(c *fiber.Ctx) error {
-	products, err := pc.productService.GetAll()
+	cachedProducts, err := pc.productsCache.Get(context.Background(), "products")
+	if err == redis.Nil {
+		products, err := pc.productService.GetAll()
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"products": nil,
+				"error":    true,
+				"msg":      "there where no products found",
+			})
+		}
+		encodedProducts, err := json.Marshal(products)
+		if err != nil {
+			return err
+		}
+		err = pc.productsCache.Set(context.Background(), "products", encodedProducts, time.Minute*30)
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"products": nil,
+				"error":    true,
+				"msg":      "there was an error caching the products",
+			})
+		}
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"products": products,
+			"error":    false,
+			"msg":      nil,
+		})
+	}
+
 	if err != nil {
+		fmt.Printf("there was an error getting the products from cache: %v", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"products": nil,
 			"error":    true,
-			"msg":      "there where no products found",
+			"msg":      "there was an error getting the products from cache",
+		})
+	}
+
+	var products []models.Product
+	err = json.Unmarshal([]byte(cachedProducts), &products)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+
+			"products": nil,
+			"error":    true,
+			"msg":      "there was an error unmarshaling the products",
 		})
 	}
 

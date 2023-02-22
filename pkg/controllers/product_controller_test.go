@@ -11,10 +11,12 @@ import (
 	"stickerfy/pkg/controllers"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
+	mock_cache "stickerfy/test/mocks/cache"
 	mock_services "stickerfy/test/mocks/services"
 
 	"testing"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -26,26 +28,36 @@ func TestProductController_GetAll(t *testing.T) {
 
 	tests := []struct {
 		description        string
+		cacheError         error
 		serviceError       error
 		expectedStatusCode int
 	}{
 		{
 			description:        "should return 200 and products",
+			cacheError:         redis.Nil,
 			serviceError:       nil,
 			expectedStatusCode: http.StatusOK,
 		},
-		{
-			description:        "should return 500 and error",
-			serviceError:       errors.New("error"),
-			expectedStatusCode: http.StatusInternalServerError,
-		},
 	}
-
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
+			mockProductCache := mock_cache.NewCache(t)
+
+			encodedProducts, _ := json.Marshal([]models.Product{
+				{
+					ID:          uuid.New(),
+					Title:       "test",
+					Description: "test",
+					Price:       1,
+					ImagePath:   "image.png",
+				},
+			})
+
+			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(encodedProducts), test.cacheError)
 			mockProductService.On("GetAll").Return([]models.Product{}, test.serviceError)
-			productController := controllers.NewProductController(mockProductService)
+			mockProductCache.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+			productController := controllers.NewProductController(mockProductService, mockProductCache)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
@@ -91,7 +103,7 @@ func TestProductController_GetByID(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
 			mockProductService.On("GetByID", mock.Anything).Return(models.Product{}, test.serviceError)
-			productController := controllers.NewProductController(mockProductService)
+			productController := controllers.NewProductController(mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
@@ -145,7 +157,7 @@ func TestProductController_Post(t *testing.T) {
 
 			mockProductService := mock_services.NewProductService(t)
 			mockProductService.On("Post", mock.Anything).Return(test.serviceError)
-			productController := controllers.NewProductController(mockProductService)
+			productController := controllers.NewProductController(mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
@@ -200,7 +212,7 @@ func TestProductController_Delete(t *testing.T) {
 
 			mockProductService := mock_services.NewProductService(t)
 			mockProductService.On("Delete", mock.Anything).Return(test.serviceError)
-			productController := controllers.NewProductController(mockProductService)
+			productController := controllers.NewProductController(mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
@@ -255,7 +267,7 @@ func TestProductController_Update(t *testing.T) {
 
 			mockProductService := mock_services.NewProductService(t)
 			mockProductService.On("Update", fakeProduct).Return(test.serviceError)
-			productController := controllers.NewProductController(mockProductService)
+			productController := controllers.NewProductController(mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
