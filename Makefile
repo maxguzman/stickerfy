@@ -56,7 +56,7 @@ docker.stickerfy: docker.stickerfy.build
 		-e REDIS_HOST="redis" \
 		-e REDIS_PORT="6379" \
 		-e REDIS_PASSWORD="secret" \
-		-e KAFKA_BROKERS="0.0.0.0:9092" \
+		-e KAFKA_BROKERS="broker:29092" \
 		-e TOPIC_NAME="stickerfy_order_added" \
 		stickerfy
 
