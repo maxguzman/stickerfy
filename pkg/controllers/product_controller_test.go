@@ -39,6 +39,7 @@ func TestProductController_GetAll(t *testing.T) {
 			expectedStatusCode: http.StatusOK,
 		},
 	}
+
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
@@ -71,6 +72,7 @@ func TestProductController_GetAll(t *testing.T) {
 			assert.Equal(t, test.expectedStatusCode, res.StatusCode)
 
 			mockProductService.AssertExpectations(t)
+			mockProductCache.AssertExpectations(t)
 		})
 	}
 }
