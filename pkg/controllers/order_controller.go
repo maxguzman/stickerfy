@@ -63,7 +63,7 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param order body models.Order true "Order"
-// @Success 200 {object} models.Order // TODO: correct success object model
+// @Success 200 {object} models.Order
 // @Router /order [post]
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
