@@ -8,6 +8,7 @@ import (
 	"stickerfy/pkg/controllers"
 	"stickerfy/pkg/middleware"
 	"stickerfy/pkg/platform/cache"
+	"stickerfy/pkg/platform/events"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
 
@@ -26,7 +27,8 @@ var (
 	orderService      services.OrderService          = services.NewOrderService(orderRepository)
 	productCache      cache.Cache                    = cache.NewRedisClient()
 	productController controllers.ProductController  = controllers.NewProductController(productService, productCache)
-	orderController   controllers.OrderController    = controllers.NewOrderController(orderService)
+	orderEvents       events.EventProducer           = events.NewKafkaProducer(os.Getenv("TOPIC_NAME"))
+	orderController   controllers.OrderController    = controllers.NewOrderController(orderService, orderEvents)
 	httpRouter        router.Router                  = router.NewFiberRouter()
 )
 

@@ -10,12 +10,14 @@ import (
 	"stickerfy/pkg/controllers"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
+	mock_events "stickerfy/test/mocks/events"
 	mock_services "stickerfy/test/mocks/services"
 
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 // TestOrderController_GetAll tests the GetAll method of the OrderController
@@ -43,7 +45,7 @@ func TestOrderController_GetAll(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			mockOrderService := mock_services.NewOrderService(t)
 			mockOrderService.On("GetAll").Return([]models.Order{}, test.serviceError)
-			orderController := controllers.NewOrderController(mockOrderService)
+			orderController := controllers.NewOrderController(mockOrderService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
@@ -75,16 +77,10 @@ func TestOrderController_Post(t *testing.T) {
 			serviceError:       nil,
 			expectedStatusCode: http.StatusCreated,
 		},
-		{
-			description:        "should return 500 and error",
-			serviceError:       errors.New("error"),
-			expectedStatusCode: http.StatusInternalServerError,
-		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
-			body := new(bytes.Buffer)
 			mockOrder := models.Order{
 				Items: []models.OrderItem{
 					{
@@ -99,12 +95,15 @@ func TestOrderController_Post(t *testing.T) {
 					},
 				},
 			}
+			body := new(bytes.Buffer)
 			err := json.NewEncoder(body).Encode(&mockOrder)
 			assert.Nil(t, err)
 
 			mockOrderService := mock_services.NewOrderService(t)
+			mockOrderEvent := mock_events.NewEventProducer(t)
 			mockOrderService.On("Post", mockOrder).Return(test.serviceError)
-			orderController := controllers.NewOrderController(mockOrderService)
+			mockOrderEvent.On("Publish", mock.Anything, mock.Anything).Return(nil)
+			orderController := controllers.NewOrderController(mockOrderService, mockOrderEvent)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)

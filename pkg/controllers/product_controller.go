@@ -148,7 +148,7 @@ func (pc *productController) GetByID(c *fiber.Ctx) error {
 // @Param title body string true "Title"
 // @Param description body string true "Description"
 // @Param price body number true "Price"
-// @Success 200 {object} models.Product
+// @Success 200 {object} models.Product // TODO: correct success object model
 // @Router /product [post]
 func (pc *productController) Post(c *fiber.Ctx) error {
 	var product models.Product
@@ -187,7 +187,7 @@ func (pc *productController) Post(c *fiber.Ctx) error {
 // @Param title body string true "Title"
 // @Param description body string true "Description"
 // @Param price body number true "Price"
-// @Success 202 {string} status "ok"
+// @Success 202 {string} status "ok" // TODO: correct success object model
 // @Router /product [put]
 func (pc *productController) Update(c *fiber.Ctx) error {
 	var product models.Product
@@ -226,7 +226,7 @@ func (pc *productController) Update(c *fiber.Ctx) error {
 // @Param title body string true "Title"
 // @Param description body string true "Description"
 // @Param price body number true "Price"
-// @Success 204 {string} status "ok"
+// @Success 204 {string} status "ok" // TODO: correct success object model
 // @Router /product [delete]
 func (pc *productController) Delete(c *fiber.Ctx) error {
 	var product models.Product

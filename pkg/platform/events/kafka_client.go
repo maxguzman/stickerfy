@@ -9,25 +9,27 @@ import (
 
 // KafkaProducer is an implementation of the Producer interface
 type KafkaProducer struct {
-	Producer *kafka.Producer
+	*kafka.Producer
+	topic string
 }
 
 // NewKafkaProducer instantiates the Kafka producer
-func NewKafkaProducer() EventProducer {
-	kafkaProducer, err := kafka.NewProducer(configs.KafkaConfig())
+func NewKafkaProducer(topic string) EventProducer {
+	kafkaProducer, err := kafka.NewProducer(configs.KafkaProducerConfig())
 	if err != nil {
 		fmt.Printf("Failed to create producer: %v", err)
 	}
 	return &KafkaProducer{
-		Producer: kafkaProducer,
+		kafkaProducer,
+		topic,
 	}
 }
 
-// Produce produces a message to Kafka
-func (p *KafkaProducer) Produce(topic string, value []byte) error {
+// Publish produces a message to Kafka
+func (p *KafkaProducer) Publish(value []byte) error {
 	deliveryChan := make(chan kafka.Event, 10000)
 	err := p.Producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		TopicPartition: kafka.TopicPartition{Topic: &p.topic, Partition: kafka.PartitionAny},
 		Value:          value,
 	}, deliveryChan)
 	if err != nil {
@@ -59,22 +61,25 @@ func (p *KafkaProducer) Produce(topic string, value []byte) error {
 
 // KafkaConsumer is an implementation of the Consumer interface
 type KafkaConsumer struct {
-	Consumer *kafka.Consumer
+	*kafka.Consumer
+	topic string
 }
 
 // NewKafkaConsumer instantiates the Kafka consumer
-func NewKafkaConsumer() EventConsumer {
-	kafkaConsumer, err := kafka.NewConsumer(configs.KafkaConfig())
+func NewKafkaConsumer(topic string) EventConsumer {
+	kafkaConsumer, err := kafka.NewConsumer(configs.KafkaConsumerConfig())
 	if err != nil {
 		fmt.Printf("Failed to create consumer: %v", err)
 	}
 	return &KafkaConsumer{
-		Consumer: kafkaConsumer,
+		kafkaConsumer,
+		topic,
 	}
 }
 
 // Consume a message from Kafka
-func (c *KafkaConsumer) Consume(topic, groupID string) ([]byte, error) {
+func (c *KafkaConsumer) Consume(groupID string) ([]byte, error) {
+	// TODO: implement correctly the consumer: https://github.com/confluentinc/confluent-kafka-go/blob/master/examples/consumer_example/consumer_example.go
 	msg, err := c.Consumer.ReadMessage(-1)
 	if err != nil {
 		return nil, err

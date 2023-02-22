@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
+	"stickerfy/pkg/platform/events"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -18,12 +20,14 @@ type OrderController interface {
 // orderController is a implementation of OrderController
 type orderController struct {
 	orderService services.OrderService
+	eventProducer events.EventProducer
 }
 
 // NewOrderController creates a new OrderController
-func NewOrderController(orderService services.OrderService) OrderController {
+func NewOrderController(orderService services.OrderService, eventProducer events.EventProducer) OrderController {
 	return &orderController{
 		orderService: orderService,
+		eventProducer: eventProducer,
 	}
 }
 
@@ -59,7 +63,7 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param order body models.Order true "Order"
-// @Success 200 {object} models.Order
+// @Success 200 {object} models.Order // TODO: correct success object model
 // @Router /order [post]
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
@@ -79,7 +83,21 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 			"msg":   "there was an error creating the order",
 		})
 	}
-
+	encodedOrder, err := json.Marshal(order)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"order": nil,
+			"error": true,
+			"msg":   "there was an error encoding the order",
+		})
+	}
+	if err:=oc.eventProducer.Publish(encodedOrder); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"order": nil,
+			"error": true,
+			"msg":   "there was an error publishing the order",
+		})
+	}
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"order": order,
 		"error": false,
