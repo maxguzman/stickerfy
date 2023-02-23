@@ -11,6 +11,7 @@ import (
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
 	mock_events "stickerfy/test/mocks/events"
+	mock_metrics "stickerfy/test/mocks/metrics"
 	mock_services "stickerfy/test/mocks/services"
 
 	"testing"
@@ -45,7 +46,7 @@ func TestOrderController_GetAll(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			mockOrderService := mock_services.NewOrderService(t)
 			mockOrderService.On("GetAll").Return([]models.Order{}, test.serviceError)
-			orderController := controllers.NewOrderController(mockOrderService, nil)
+			orderController := controllers.NewOrderController(mockOrderService, nil, nil)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
@@ -101,9 +102,11 @@ func TestOrderController_Post(t *testing.T) {
 
 			mockOrderService := mock_services.NewOrderService(t)
 			mockOrderEvent := mock_events.NewEventProducer(t)
+			mockMetrics := mock_metrics.NewMetrics(t)
 			mockOrderService.On("Post", mockOrder).Return(test.serviceError)
 			mockOrderEvent.On("Publish", mock.Anything, mock.Anything).Return(nil)
-			orderController := controllers.NewOrderController(mockOrderService, mockOrderEvent)
+			mockMetrics.On("IncrementCounter", "orders", mock.Anything).Return(nil)
+			orderController := controllers.NewOrderController(mockOrderService, mockOrderEvent, mockMetrics)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
@@ -118,6 +121,7 @@ func TestOrderController_Post(t *testing.T) {
 
 			mockOrderService.AssertExpectations(t)
 			mockOrderEvent.AssertExpectations(t)
+			mockMetrics.AssertExpectations(t)
 		})
 	}
 }

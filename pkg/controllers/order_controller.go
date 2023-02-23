@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"stickerfy/app/models"
 	"stickerfy/app/services"
+	"stickerfy/pkg/metrics"
 	"stickerfy/pkg/platform/events"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,15 +20,17 @@ type OrderController interface {
 
 // orderController is a implementation of OrderController
 type orderController struct {
-	orderService services.OrderService
+	orderService  services.OrderService
 	eventProducer events.EventProducer
+	orderMetrics  metrics.Metrics
 }
 
 // NewOrderController creates a new OrderController
-func NewOrderController(orderService services.OrderService, eventProducer events.EventProducer) OrderController {
+func NewOrderController(orderService services.OrderService, eventProducer events.EventProducer, orderMetrics metrics.Metrics) OrderController {
 	return &orderController{
-		orderService: orderService,
+		orderService:  orderService,
 		eventProducer: eventProducer,
+		orderMetrics:  orderMetrics,
 	}
 }
 
@@ -91,13 +94,14 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 			"msg":   "there was an error encoding the order",
 		})
 	}
-	if err:=oc.eventProducer.Publish(encodedOrder); err != nil {
+	if err := oc.eventProducer.Publish(encodedOrder); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"order": nil,
 			"error": true,
 			"msg":   "there was an error publishing the order",
 		})
 	}
+	oc.orderMetrics.IncrementCounter("orders", order.ID.String())
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"order": order,
 		"error": false,

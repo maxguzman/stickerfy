@@ -6,11 +6,13 @@ import (
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
+	"stickerfy/pkg/metrics"
 	"stickerfy/pkg/middleware"
 	"stickerfy/pkg/platform/cache"
 	"stickerfy/pkg/platform/events"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
+	"sync"
 
 	_ "stickerfy/docs"
 )
@@ -28,7 +30,9 @@ var (
 	productCache      cache.Cache                    = cache.NewRedisClient()
 	productController controllers.ProductController  = controllers.NewProductController(productService, productCache)
 	orderEvents       events.EventProducer           = events.NewKafkaProducer(os.Getenv("TOPIC_NAME"))
-	orderController   controllers.OrderController    = controllers.NewOrderController(orderService, orderEvents)
+	mutex             sync.Mutex                     = sync.Mutex{}
+	orderMetrics      metrics.Metrics                = metrics.NewPrometheusMetrics(&mutex)
+	orderController   controllers.OrderController    = controllers.NewOrderController(orderService, orderEvents, orderMetrics)
 	httpRouter        router.Router                  = router.NewFiberRouter()
 )
 
@@ -49,6 +53,7 @@ func main() {
 	routes.SwaggerRoute(httpRouter)
 	routes.ProductRoutes(httpRouter, productController)
 	routes.OrderRoutes(httpRouter, orderController)
+	routes.MetricsRoute(httpRouter)
 	routes.NotFoundRoute(httpRouter)
 
 	if os.Getenv("ENV") == "production" {
