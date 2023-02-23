@@ -28,16 +28,21 @@ func NewPrometheusMetrics(mutex *sync.Mutex) Metrics {
 func (p prometheusMetrics) InitMetrics(metricsDefinitions map[string]interface{}) {
 	p.mutex.Lock()
 	metricsDefinitions["orders"].(*prometheus.CounterVec).WithLabelValues("")
-	prometheus.Register(metricsDefinitions["orders"].(*prometheus.CounterVec))
-
+	if err := prometheus.Register(metricsDefinitions["orders"].(*prometheus.CounterVec)); err != nil {
+		panic(err)
+	}
 	metricsDefinitions["totalRequests"].(*prometheus.CounterVec).WithLabelValues("")
-	prometheus.Register(metricsDefinitions["totalRequests"].(*prometheus.CounterVec))
-
+	if err := prometheus.Register(metricsDefinitions["totalRequests"].(*prometheus.CounterVec)); err != nil {
+		panic(err)
+	}
 	metricsDefinitions["responseStatus"].(*prometheus.CounterVec).WithLabelValues("")
-	prometheus.Register(metricsDefinitions["responseStatus"].(*prometheus.CounterVec))
-
+	if err := prometheus.Register(metricsDefinitions["responseStatus"].(*prometheus.CounterVec)); err != nil {
+		panic(err)
+	}
 	metricsDefinitions["httpDuration"].(*prometheus.HistogramVec).WithLabelValues("")
-	prometheus.Register(metricsDefinitions["httpDuration"].(*prometheus.HistogramVec))
+	if err := prometheus.Register(metricsDefinitions["httpDuration"].(*prometheus.HistogramVec)); err != nil {
+		panic(err)
+	}
 	p.mutex.Unlock()
 }
 
