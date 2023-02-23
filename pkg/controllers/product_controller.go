@@ -89,7 +89,6 @@ func (pc *productController) GetAll(c *fiber.Ctx) error {
 	err = json.Unmarshal([]byte(cachedProducts), &products)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-
 			"products": nil,
 			"error":    true,
 			"msg":      "there was an error unmarshaling the products",

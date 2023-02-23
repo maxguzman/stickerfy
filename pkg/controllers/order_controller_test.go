@@ -117,6 +117,7 @@ func TestOrderController_Post(t *testing.T) {
 			assert.Equal(t, test.expectedStatusCode, res.StatusCode)
 
 			mockOrderService.AssertExpectations(t)
+			mockOrderEvent.AssertExpectations(t)
 		})
 	}
 }
