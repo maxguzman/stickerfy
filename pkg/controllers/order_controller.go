@@ -55,6 +55,14 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	if orders == nil {
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{
+			"orders": nil,
+			"error":  true,
+			"msg":    "there where no orders found",
+		})
+	}
+
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"orders": orders,
 		"error":  false,
