@@ -22,11 +22,11 @@ func setLogger() func(ctx *fiber.Ctx) error {
 	if os.Getenv("ENV") == "dev" {
 		return logger.New()
 	}
-	logger := logrus.New()
-	logger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: true})
-	logger.SetLevel(logrus.InfoLevel)
+	logrusLogger := logrus.New()
+	logrusLogger.SetFormatter(&logrus.JSONFormatter{PrettyPrint: true})
+	logrusLogger.SetLevel(logrus.InfoLevel)
 	return fiberlogrus.New(fiberlogrus.Config{
-		Logger: logger,
+		Logger: logrusLogger,
 		Tags: []string{
 			fiberlogrus.TagStatus,
 			fiberlogrus.TagLatency,
