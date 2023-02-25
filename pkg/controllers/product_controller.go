@@ -59,11 +59,18 @@ func (pc *productController) GetAll(c *fiber.Ctx) error {
 				"msg":      "there where no products found",
 			})
 		}
+		if products == nil {
+			return c.Status(http.StatusNotFound).JSON(fiber.Map{
+				"products": nil,
+				"error":    true,
+				"msg":      "there where no products found",
+			})
+		}
 		encodedProducts, err := json.Marshal(products)
 		if err != nil {
 			return err
 		}
-		err = pc.productsCache.Set(pc.context, "products", encodedProducts, time.Minute*30)
+		err = pc.productsCache.Set(pc.context, "products", encodedProducts, time.Minute*5)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 				"products": nil,
