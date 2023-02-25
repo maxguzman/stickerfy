@@ -7,6 +7,7 @@ import (
 	"stickerfy/app/services"
 	"stickerfy/pkg/controllers"
 	"stickerfy/pkg/metrics"
+	"stickerfy/pkg/middleware"
 	"stickerfy/pkg/platform/cache"
 	"stickerfy/pkg/platform/events"
 	"stickerfy/pkg/router"
@@ -47,7 +48,7 @@ var (
 // @in header
 // @name Authorization
 func main() {
-	// middleware.FiberMiddleware(httpRouter)
+	middleware.FiberMiddleware(httpRouter)
 	routes.SwaggerRoute(httpRouter)
 	routes.ProductRoutes(httpRouter, productController)
 	routes.OrderRoutes(httpRouter, orderController)
