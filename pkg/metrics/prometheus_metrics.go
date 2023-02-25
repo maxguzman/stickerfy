@@ -14,8 +14,9 @@ type prometheusMetrics struct {
 }
 
 // NewPrometheusMetrics creates a new prometheus metrics
-func NewPrometheusMetrics(mutex *sync.Mutex) Metrics {
+func NewPrometheusMetrics() Metrics {
 	metricsDefinitions := configs.NewMetricsDefinition()
+	mutex := &sync.Mutex{}
 	var metrics Metrics = prometheusMetrics{
 		metrics: metricsDefinitions,
 		mutex:   mutex,

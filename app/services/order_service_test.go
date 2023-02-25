@@ -1,9 +1,11 @@
 package services_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"stickerfy/app/models"
 	"stickerfy/app/services"
@@ -14,11 +16,11 @@ import (
 func TestGetAllOrders(t *testing.T) {
 	t.Parallel()
 	mockOrderRepository := new(mock_repositories.OrderRepository)
-	mockOrderRepository.On("GetAll").Return([]models.Order{}, nil)
+	mockOrderRepository.On("GetAll", mock.Anything).Return([]models.Order{}, nil)
 
 	orderService := services.NewOrderService(mockOrderRepository)
 
-	orders, err := orderService.GetAll()
+	orders, err := orderService.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.Equal(t, []models.Order{}, orders)
 }
@@ -27,10 +29,10 @@ func TestGetAllOrders(t *testing.T) {
 func TestPostOrder(t *testing.T) {
 	t.Parallel()
 	mockOrderRepository := new(mock_repositories.OrderRepository)
-	mockOrderRepository.On("Post", models.Order{}).Return(nil)
+	mockOrderRepository.On("Post", mock.Anything, models.Order{}).Return(nil)
 
 	orderService := services.NewOrderService(mockOrderRepository)
 
-	err := orderService.Post(models.Order{})
+	err := orderService.Post(context.Background(), models.Order{})
 	assert.Nil(t, err)
 }

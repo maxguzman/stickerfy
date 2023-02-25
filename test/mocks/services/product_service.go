@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	context "context"
 	models "stickerfy/app/models"
 
 	mock "github.com/stretchr/testify/mock"
@@ -15,13 +16,13 @@ type ProductService struct {
 	mock.Mock
 }
 
-// Delete provides a mock function with given fields: product
-func (_m *ProductService) Delete(product models.Product) error {
-	ret := _m.Called(product)
+// Delete provides a mock function with given fields: ctx, product
+func (_m *ProductService) Delete(ctx context.Context, product models.Product) error {
+	ret := _m.Called(ctx, product)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(models.Product) error); ok {
-		r0 = rf(product)
+	if rf, ok := ret.Get(0).(func(context.Context, models.Product) error); ok {
+		r0 = rf(ctx, product)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -29,25 +30,25 @@ func (_m *ProductService) Delete(product models.Product) error {
 	return r0
 }
 
-// GetAll provides a mock function with given fields:
-func (_m *ProductService) GetAll() ([]models.Product, error) {
-	ret := _m.Called()
+// GetAll provides a mock function with given fields: ctx
+func (_m *ProductService) GetAll(ctx context.Context) ([]models.Product, error) {
+	ret := _m.Called(ctx)
 
 	var r0 []models.Product
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]models.Product, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(context.Context) ([]models.Product, error)); ok {
+		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func() []models.Product); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(context.Context) []models.Product); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]models.Product)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -55,23 +56,23 @@ func (_m *ProductService) GetAll() ([]models.Product, error) {
 	return r0, r1
 }
 
-// GetByID provides a mock function with given fields: id
-func (_m *ProductService) GetByID(id uuid.UUID) (models.Product, error) {
-	ret := _m.Called(id)
+// GetByID provides a mock function with given fields: ctx, id
+func (_m *ProductService) GetByID(ctx context.Context, id uuid.UUID) (models.Product, error) {
+	ret := _m.Called(ctx, id)
 
 	var r0 models.Product
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uuid.UUID) (models.Product, error)); ok {
-		return rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (models.Product, error)); ok {
+		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(uuid.UUID) models.Product); ok {
-		r0 = rf(id)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) models.Product); ok {
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(models.Product)
 	}
 
-	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = rf(id)
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -79,13 +80,13 @@ func (_m *ProductService) GetByID(id uuid.UUID) (models.Product, error) {
 	return r0, r1
 }
 
-// Post provides a mock function with given fields: product
-func (_m *ProductService) Post(product models.Product) error {
-	ret := _m.Called(product)
+// Post provides a mock function with given fields: ctx, product
+func (_m *ProductService) Post(ctx context.Context, product models.Product) error {
+	ret := _m.Called(ctx, product)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(models.Product) error); ok {
-		r0 = rf(product)
+	if rf, ok := ret.Get(0).(func(context.Context, models.Product) error); ok {
+		r0 = rf(ctx, product)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -93,13 +94,13 @@ func (_m *ProductService) Post(product models.Product) error {
 	return r0
 }
 
-// Update provides a mock function with given fields: product
-func (_m *ProductService) Update(product models.Product) error {
-	ret := _m.Called(product)
+// Update provides a mock function with given fields: ctx, product
+func (_m *ProductService) Update(ctx context.Context, product models.Product) error {
+	ret := _m.Called(ctx, product)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(models.Product) error); ok {
-		r0 = rf(product)
+	if rf, ok := ret.Get(0).(func(context.Context, models.Product) error); ok {
+		r0 = rf(ctx, product)
 	} else {
 		r0 = ret.Error(0)
 	}

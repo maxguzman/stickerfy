@@ -32,16 +32,16 @@ func NewMongoOrderRepository(ctx context.Context, collection string) OrderReposi
 }
 
 // GetAll returns all orders
-func (or *mongoOrderRepository) GetAll() ([]models.Order, error) {
+func (or *mongoOrderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
 	var orders []models.Order
 	col := or.getCollection()
-	cursor, err := col.Find(context.TODO(), bson.M{})
+	cursor, err := col.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
+	defer cursor.Close(ctx)
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var order models.Order
 		err := cursor.Decode(&order)
 		if err != nil {
@@ -53,9 +53,9 @@ func (or *mongoOrderRepository) GetAll() ([]models.Order, error) {
 }
 
 // Post creates a new order
-func (or *mongoOrderRepository) Post(order models.Order) error {
+func (or *mongoOrderRepository) Post(ctx context.Context, order models.Order) error {
 	col := or.getCollection()
-	_, err := col.InsertOne(context.TODO(), order)
+	_, err := col.InsertOne(ctx, order)
 	if err != nil {
 		return err
 	}

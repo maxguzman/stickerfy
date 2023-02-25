@@ -34,16 +34,16 @@ func NewMongoProductRepository(ctx context.Context, collection string) ProductRe
 }
 
 // FindAll returns all products
-func (pr *mongoProductRepository) GetAll() ([]models.Product, error) {
+func (pr *mongoProductRepository) GetAll(ctx context.Context) ([]models.Product, error) {
 	var products []models.Product
 	col := pr.getCollection()
-	cursor, err := col.Find(context.TODO(), bson.M{})
+	cursor, err := col.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
+	defer cursor.Close(ctx)
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var product models.Product
 		err := cursor.Decode(&product)
 		if err != nil {
@@ -55,10 +55,10 @@ func (pr *mongoProductRepository) GetAll() ([]models.Product, error) {
 }
 
 // Get returns a product by id
-func (pr *mongoProductRepository) GetByID(id uuid.UUID) (models.Product, error) {
+func (pr *mongoProductRepository) GetByID(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	var product models.Product
 	col := pr.getCollection()
-	err := col.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&product)
+	err := col.FindOne(ctx, bson.M{"_id": id}).Decode(&product)
 	if err != nil {
 		return models.Product{}, err
 	}
@@ -66,9 +66,9 @@ func (pr *mongoProductRepository) GetByID(id uuid.UUID) (models.Product, error) 
 }
 
 // New creates a new product
-func (pr *mongoProductRepository) Post(product models.Product) error {
+func (pr *mongoProductRepository) Post(ctx context.Context, product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.InsertOne(context.TODO(), product)
+	_, err := col.InsertOne(ctx, product)
 	if err != nil {
 		return err
 	}
@@ -76,9 +76,9 @@ func (pr *mongoProductRepository) Post(product models.Product) error {
 }
 
 // Update updates a product
-func (pr *mongoProductRepository) Update(product models.Product) error {
+func (pr *mongoProductRepository) Update(ctx context.Context, product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.UpdateOne(context.TODO(), bson.M{"_id": product.ID}, bson.M{"$set": product})
+	_, err := col.UpdateOne(ctx, bson.M{"_id": product.ID}, bson.M{"$set": product})
 	if err != nil {
 		return err
 	}
@@ -86,9 +86,9 @@ func (pr *mongoProductRepository) Update(product models.Product) error {
 }
 
 // Delete deletes a product by id
-func (pr *mongoProductRepository) Delete(product models.Product) error {
+func (pr *mongoProductRepository) Delete(ctx context.Context, product models.Product) error {
 	col := pr.getCollection()
-	_, err := col.DeleteOne(context.TODO(), bson.M{"_id": product.ID})
+	_, err := col.DeleteOne(ctx, bson.M{"_id": product.ID})
 	if err != nil {
 		return err
 	}

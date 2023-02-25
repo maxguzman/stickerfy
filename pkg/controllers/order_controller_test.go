@@ -2,6 +2,7 @@ package controllers_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -45,8 +46,8 @@ func TestOrderController_GetAll(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			mockOrderService := mock_services.NewOrderService(t)
-			mockOrderService.On("GetAll").Return([]models.Order{}, test.serviceError)
-			orderController := controllers.NewOrderController(mockOrderService, nil, nil)
+			mockOrderService.On("GetAll", mock.Anything).Return([]models.Order{}, test.serviceError)
+			orderController := controllers.NewOrderController(context.Background(), mockOrderService, nil, nil)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
@@ -103,10 +104,10 @@ func TestOrderController_Post(t *testing.T) {
 			mockOrderService := mock_services.NewOrderService(t)
 			mockOrderEvent := mock_events.NewEventProducer(t)
 			mockMetrics := mock_metrics.NewMetrics(t)
-			mockOrderService.On("Post", mockOrder).Return(test.serviceError)
+			mockOrderService.On("Post", mock.Anything, mockOrder).Return(test.serviceError)
 			mockOrderEvent.On("Publish", mock.Anything, mock.Anything).Return(nil)
 			mockMetrics.On("IncrementCounter", "orders", mock.Anything).Return(nil)
-			orderController := controllers.NewOrderController(mockOrderService, mockOrderEvent, mockMetrics)
+			orderController := controllers.NewOrderController(context.Background(), mockOrderService, mockOrderEvent, mockMetrics)
 
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)

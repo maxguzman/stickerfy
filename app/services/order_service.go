@@ -1,14 +1,15 @@
 package services
 
 import (
+	"context"
 	"stickerfy/app/models"
 	"stickerfy/app/repositories"
 )
 
 // OrderService is an interface for an order service
 type OrderService interface {
-	GetAll() ([]models.Order, error)
-	Post(order models.Order) error
+	GetAll(ctx context.Context) ([]models.Order, error)
+	Post(ctx context.Context, order models.Order) error
 }
 
 // orderService is a implementation of OrderService
@@ -24,11 +25,11 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 }
 
 // GetAll returns all orders
-func (os *orderService) GetAll() ([]models.Order, error) {
-	return os.orderRepository.GetAll()
+func (os *orderService) GetAll(ctx context.Context) ([]models.Order, error) {
+	return os.orderRepository.GetAll(ctx)
 }
 
 // Post creates a new order
-func (os *orderService) Post(order models.Order) error {
-	return os.orderRepository.Post(order)
+func (os *orderService) Post(ctx context.Context, order models.Order) error {
+	return os.orderRepository.Post(ctx, order)
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"stickerfy/app/models"
@@ -23,14 +24,16 @@ type orderController struct {
 	orderService  services.OrderService
 	eventProducer events.EventProducer
 	orderMetrics  metrics.Metrics
+	context       context.Context
 }
 
 // NewOrderController creates a new OrderController
-func NewOrderController(orderService services.OrderService, eventProducer events.EventProducer, orderMetrics metrics.Metrics) OrderController {
+func NewOrderController(ctx context.Context, orderService services.OrderService, eventProducer events.EventProducer, orderMetrics metrics.Metrics) OrderController {
 	return &orderController{
 		orderService:  orderService,
 		eventProducer: eventProducer,
 		orderMetrics:  orderMetrics,
+		context:       ctx,
 	}
 }
 
@@ -43,7 +46,7 @@ func NewOrderController(orderService services.OrderService, eventProducer events
 // @Success 200 {array} models.Product
 // @Router /orders [get]
 func (oc *orderController) GetAll(c *fiber.Ctx) error {
-	orders, err := oc.orderService.GetAll()
+	orders, err := oc.orderService.GetAll(oc.context)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"orders": nil,
@@ -78,7 +81,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 			"msg":   "invalid order",
 		})
 	}
-	err := oc.orderService.Post(order)
+	err := oc.orderService.Post(oc.context, order)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"order": nil,

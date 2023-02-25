@@ -28,13 +28,15 @@ type ProductController interface {
 type productController struct {
 	productService services.ProductService
 	productsCache  cache.Cache
+	context        context.Context
 }
 
 // NewProductController creates a new ProductController
-func NewProductController(productService services.ProductService, productCache cache.Cache) ProductController {
+func NewProductController(ctx context.Context, productService services.ProductService, productCache cache.Cache) ProductController {
 	return &productController{
 		productService: productService,
 		productsCache:  productCache,
+		context:        ctx,
 	}
 }
 
@@ -47,9 +49,9 @@ func NewProductController(productService services.ProductService, productCache c
 // @Success 200 {array} models.Product
 // @Router /products [get]
 func (pc *productController) GetAll(c *fiber.Ctx) error {
-	cachedProducts, err := pc.productsCache.Get(context.Background(), "products")
+	cachedProducts, err := pc.productsCache.Get(pc.context, "products")
 	if err == redis.Nil {
-		products, err := pc.productService.GetAll()
+		products, err := pc.productService.GetAll(pc.context)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 				"products": nil,
@@ -61,7 +63,7 @@ func (pc *productController) GetAll(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		err = pc.productsCache.Set(context.Background(), "products", encodedProducts, time.Minute*30)
+		err = pc.productsCache.Set(pc.context, "products", encodedProducts, time.Minute*30)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 				"products": nil,
@@ -121,7 +123,7 @@ func (pc *productController) GetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	product, err := pc.productService.GetByID(id)
+	product, err := pc.productService.GetByID(pc.context, id)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"product": nil,
@@ -159,7 +161,7 @@ func (pc *productController) Post(c *fiber.Ctx) error {
 			"product": nil,
 		})
 	}
-	err := pc.productService.Post(product)
+	err := pc.productService.Post(pc.context, product)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"product": nil,
@@ -198,7 +200,7 @@ func (pc *productController) Update(c *fiber.Ctx) error {
 		})
 	}
 
-	err := pc.productService.Update(product)
+	err := pc.productService.Update(pc.context, product)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"product": nil,
@@ -236,7 +238,7 @@ func (pc *productController) Delete(c *fiber.Ctx) error {
 			"product": nil,
 		})
 	}
-	err := pc.productService.Delete(product)
+	err := pc.productService.Delete(pc.context, product)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"product": nil,
