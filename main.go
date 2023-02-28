@@ -30,8 +30,8 @@ var (
 	productCache      cache.Cache                    = cache.NewRedisClient()
 	productController controllers.ProductController  = controllers.NewProductController(ctx, productService, productCache)
 	orderEvents       events.EventProducer           = events.NewKafkaProducer(os.Getenv("TOPIC_NAME"))
-	orderMetrics      metrics.Metrics                = metrics.NewPrometheusMetrics()
-	orderController   controllers.OrderController    = controllers.NewOrderController(ctx, orderService, orderEvents, orderMetrics)
+	customMetrics     metrics.Metrics                = metrics.NewPrometheusMetrics()
+	orderController   controllers.OrderController    = controllers.NewOrderController(ctx, orderService, orderEvents, customMetrics)
 	httpRouter        router.Router                  = router.NewFiberRouter()
 )
 

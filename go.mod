@@ -3,6 +3,7 @@ module stickerfy
 go 1.19
 
 require (
+	github.com/ansrivas/fiberprometheus/v2 v2.6.0
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gofiber/adaptor/v2 v2.1.32

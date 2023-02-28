@@ -86,3 +86,8 @@ func (mr *muxRouter) ServeWithGracefulShutdown() {
 func (mr *muxRouter) Test(req *http.Request, msTimeout ...int) (*http.Response, error) {
 	return nil, nil
 }
+
+// GetApp is a method for getting the app
+func (mr *muxRouter) GetApp() *fiber.App {
+	return nil
+}

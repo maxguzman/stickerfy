@@ -17,4 +17,5 @@ type Router interface {
 	Serve()
 	ServeWithGracefulShutdown()
 	Test(req *http.Request, msTimeout ...int) (*http.Response, error)
+	GetApp() *fiber.App
 }

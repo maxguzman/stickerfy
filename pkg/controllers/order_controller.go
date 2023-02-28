@@ -23,16 +23,16 @@ type OrderController interface {
 type orderController struct {
 	orderService  services.OrderService
 	eventProducer events.EventProducer
-	orderMetrics  metrics.Metrics
+	customMetrics metrics.Metrics
 	context       context.Context
 }
 
 // NewOrderController creates a new OrderController
-func NewOrderController(ctx context.Context, orderService services.OrderService, eventProducer events.EventProducer, orderMetrics metrics.Metrics) OrderController {
+func NewOrderController(ctx context.Context, orderService services.OrderService, eventProducer events.EventProducer, customMetrics metrics.Metrics) OrderController {
 	return &orderController{
 		orderService:  orderService,
 		eventProducer: eventProducer,
-		orderMetrics:  orderMetrics,
+		customMetrics: customMetrics,
 		context:       ctx,
 	}
 }
@@ -91,6 +91,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 	}
 	err := oc.orderService.Post(oc.context, order)
 	if err != nil {
+		oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"order": nil,
 			"error": true,
@@ -99,6 +100,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 	}
 	encodedOrder, err := json.Marshal(order)
 	if err != nil {
+		oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"order": nil,
 			"error": true,
@@ -112,7 +114,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 			"msg":   "there was an error publishing the order",
 		})
 	}
-	oc.orderMetrics.IncrementCounter("orders", order.ID.String())
+	oc.customMetrics.IncrementCounter("orderAdded", order.ID.String())
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"order": order,
 		"error": false,

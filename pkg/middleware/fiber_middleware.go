@@ -4,6 +4,8 @@ import (
 	"os"
 	"stickerfy/pkg/router"
 
+	"github.com/ansrivas/fiberprometheus/v2"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -15,7 +17,8 @@ import (
 func FiberMiddleware(httpRouter router.Router) {
 	httpRouter.
 		Use(cors.New()).
-		Use(setLogger())
+		Use(setLogger()).
+		Use(fiberPrometheus(httpRouter).Middleware)
 }
 
 func setLogger() func(ctx *fiber.Ctx) error {
@@ -38,4 +41,10 @@ func setLogger() func(ctx *fiber.Ctx) error {
 			fiberlogrus.TagResBody,
 		},
 	})
+}
+
+func fiberPrometheus(httpRouter router.Router) *fiberprometheus.FiberPrometheus {
+	fp := fiberprometheus.New("stickerfy")
+	fp.RegisterAt(httpRouter.GetApp(), "/metrics")
+	return fp
 }

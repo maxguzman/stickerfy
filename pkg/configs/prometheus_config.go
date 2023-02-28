@@ -1,37 +1,25 @@
 package configs
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+)
 
 // NewMetricsDefinition creates a new metrics definition
 func NewMetricsDefinition() map[string]interface{} {
 	return map[string]interface{}{
-		"orders": prometheus.NewCounterVec(
+		"orderAdded": prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "stickerfy_add_orders_total",
-				Help: "Total number of processed orders",
+				Name: "stickerfy_orders_added_total",
+				Help: "Total number of processed orders.",
 			},
 			[]string{"id"},
 		),
-		"totalRequests": prometheus.NewCounterVec(
+		"orderFailed": prometheus.NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "http_requests_total",
-				Help: "Number of get requests.",
+				Name: "stickerfy_orders_failed_total",
+				Help: "Total number of failed orders.",
 			},
-			[]string{"path"},
-		),
-		"responseStatus": prometheus.NewCounterVec(
-			prometheus.CounterOpts{
-				Name: "response_status",
-				Help: "Status of HTTP response.",
-			},
-			[]string{"status"},
-		),
-		"httpDuration": prometheus.NewHistogramVec(
-			prometheus.HistogramOpts{
-				Name: "http_response_time_seconds",
-				Help: "Duration of HTTP requests.",
-			},
-			[]string{"path"},
+			[]string{"id"},
 		),
 	}
 }

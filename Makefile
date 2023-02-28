@@ -28,7 +28,9 @@ run: swag build
 swag:
 	swag init
 
-docker.run: docker.network swag docker.stickerfy docker.redis docker.mongo docker.zookeeper docker.kafka
+docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana
+
+docker.run: docker.dev-dependencies swag docker.stickerfy
 
 docker.network:
 	docker network inspect dev-network >/dev/null 2>&1 || \
@@ -101,7 +103,28 @@ docker.kafka:
     -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
 		confluentinc/cp-kafka:7.3.0
 
-docker.stop: docker.stop.stickerfy docker.stop.redis docker.stop.mongo docker.stop.zookeeper docker.stop.kafka
+docker.prometheus:
+	docker run --rm -d \
+		--name prometheus \
+		--network dev-network \
+		-p 9090:9090 \
+		-v $(shell pwd)/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+    prom/prometheus
+
+docker.grafana:
+	docker run --rm -d \
+		--name grafana \
+		--network dev-network \
+		-p 3000:3000 \
+		-v $(shell pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
+		-v $(shell pwd)/config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/local.yml \
+		-v $(shell pwd)/config/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json \
+		-e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource" \
+    grafana/grafana-oss
+
+docker.stop: docker.stop.stickerfy docker.stop.dev-dependencies
+
+docker.stop.dev-dependencies: docker.stop.redis docker.stop.mongo docker.stop.zookeeper docker.stop.kafka docker.stop.prometheus docker.stop.grafana
 
 docker.stop.stickerfy:
 	docker stop stickerfy
@@ -118,7 +141,13 @@ docker.stop.zookeeper:
 docker.stop.kafka:
 	docker stop broker
 
+docker.stop.prometheus:
+	docker stop prometheus
+
+docker.stop.grafana:
+	docker stop grafana
+
 docker.scan:
 	docker scan stickerfy
 
-refresh: docker.stop.stickerfy swag docker.stickerfy
+docker.refresh: docker.stop.stickerfy swag docker.stickerfy

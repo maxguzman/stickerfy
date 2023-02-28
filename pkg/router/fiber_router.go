@@ -93,3 +93,8 @@ func (fr *fiberRouter) ServeWithGracefulShutdown() {
 func (fr *fiberRouter) Test(req *http.Request, msTimeout ...int) (*http.Response, error) {
 	return fr.app.Test(req, msTimeout...)
 }
+
+// GetApp is a method for getting the fiber app
+func (fr *fiberRouter) GetApp() *fiber.App {
+	return fr.app
+}

@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: stickerfy
+    static_configs:
+      - targets: ["stickerfy:8000"]
+        labels:
+          app: stickerfy
+          env: dev
