@@ -106,7 +106,7 @@ func TestOrderController_Post(t *testing.T) {
 			mockMetrics := mock_metrics.NewMetrics(t)
 			mockOrderService.On("Post", mock.Anything, mockOrder).Return(test.serviceError)
 			mockOrderEvent.On("Publish", mock.Anything, mock.Anything).Return(nil)
-			mockMetrics.On("IncrementCounter", "orders", mock.Anything).Return(nil)
+			mockMetrics.On("IncrementCounter", "orderAdded", mock.Anything).Return(nil)
 			orderController := controllers.NewOrderController(context.Background(), mockOrderService, mockOrderEvent, mockMetrics)
 
 			fr := router.NewFiberRouter()
