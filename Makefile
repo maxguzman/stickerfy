@@ -151,3 +151,22 @@ docker.scan:
 	docker scan stickerfy
 
 docker.refresh: docker.stop.stickerfy swag docker.stickerfy
+
+dev:
+	@ENV="dev" \
+	SERVER_HOST="0.0.0.0" \
+	SERVER_PORT="8000" \
+	READ_TIMEOUT=15 \
+	WRITE_TIMEOUT=15 \
+	IDLE_TIMEOUT=60 \
+	MONGO_USER="mongoadmin" \
+	MONGO_PASSWORD="secret" \
+	MONGO_HOST="0.0.0.0" \
+	MONGO_PORT="27017" \
+	MONGO_DATABASE="stickerfy" \
+	REDIS_HOST="0.0.0.0" \
+	REDIS_PORT="6379" \
+	REDIS_PASSWORD="secret" \
+	KAFKA_BROKERS="localhost:9092" \
+	TOPIC_NAME="stickerfy_order_added" \
+	go run main.go
