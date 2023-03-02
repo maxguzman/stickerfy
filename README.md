@@ -6,7 +6,7 @@ Stickerfy is a testing oriented application that helps software engineers to bui
 
 ## Architecture
 
-The architecture of this application is based on Docker containers, there is a `Makefile` that automate the local development environment installing all the dependencies that this application need:
+The application architecture is based on Docker containers, there is a `Makefile` that automate the local development environment installing all the dependencies that this application need:
 
 ![stickerfy-architecture](/static/stickerfy-architecture.png)
 
