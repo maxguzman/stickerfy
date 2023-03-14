@@ -28,25 +28,34 @@ func TestOrderController_GetAll(t *testing.T) {
 
 	tests := []struct {
 		description        string
+		serviceReturn      interface{}
 		serviceError       error
 		expectedStatusCode int
 	}{
 		{
 			description:        "should return 200 and orders",
+			serviceReturn:      []models.Order{},
 			serviceError:       nil,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
 			description:        "should return 500 and error",
+			serviceReturn:      []models.Order{},
 			serviceError:       errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			description:        "should return 404 and error",
+			serviceReturn:      nil,
+			serviceError:       nil,
+			expectedStatusCode: http.StatusNotFound,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			mockOrderService := mock_services.NewOrderService(t)
-			mockOrderService.On("GetAll", mock.Anything).Return([]models.Order{}, test.serviceError)
+			mockOrderService.On("GetAll", mock.Anything).Return(test.serviceReturn, test.serviceError)
 			orderController := controllers.NewOrderController(context.Background(), mockOrderService, nil, nil)
 
 			fr := router.NewFiberRouter()
@@ -69,44 +78,67 @@ func TestOrderController_GetAll(t *testing.T) {
 func TestOrderController_Post(t *testing.T) {
 	t.Parallel()
 
+	fakeOrder := models.Order{
+		Items: []models.OrderItem{
+			{
+				Product: models.Product{
+					ID:          uuid.New(),
+					Description: "Test Product",
+					Price:       10.0,
+					ImagePath:   "test.png",
+					Title:       "Test Product",
+				},
+				Quantity: 1,
+			},
+		},
+	}
+
 	tests := []struct {
 		description        string
+		metricLabel        string
 		serviceError       error
+		publishError       error
 		expectedStatusCode int
 	}{
 		{
 			description:        "should return 201 and order",
+			metricLabel:        "orderAdded",
 			serviceError:       nil,
+			publishError:       nil,
 			expectedStatusCode: http.StatusCreated,
+		},
+		{
+			description:        "should return 500 and error when service fails",
+			metricLabel:        "orderFailed",
+			serviceError:       errors.New("error"),
+			publishError:       nil,
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			description:        "should return 500 and error when event publish fails",
+			metricLabel:        "",
+			serviceError:       nil,
+			publishError:       errors.New("error"),
+			expectedStatusCode: http.StatusInternalServerError,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
-			mockOrder := models.Order{
-				Items: []models.OrderItem{
-					{
-						Product: models.Product{
-							ID:          uuid.New(),
-							Description: "Test Product",
-							Price:       10.0,
-							ImagePath:   "test.png",
-							Title:       "Test Product",
-						},
-						Quantity: 1,
-					},
-				},
-			}
 			body := new(bytes.Buffer)
-			err := json.NewEncoder(body).Encode(&mockOrder)
+			err := json.NewEncoder(body).Encode(&fakeOrder)
 			assert.Nil(t, err)
 
 			mockOrderService := mock_services.NewOrderService(t)
-			mockOrderEvent := mock_events.NewEventProducer(t)
 			mockMetrics := mock_metrics.NewMetrics(t)
-			mockOrderService.On("Post", mock.Anything, mockOrder).Return(test.serviceError)
-			mockOrderEvent.On("Publish", mock.Anything, mock.Anything).Return(nil)
-			mockMetrics.On("IncrementCounter", "orderAdded", mock.Anything).Return(nil)
+			mockOrderEvent := mock_events.NewEventProducer(t)
+			mockOrderService.On("Post", mock.Anything, fakeOrder).Return(test.serviceError)
+			if test.metricLabel != "" {
+				mockMetrics.On("IncrementCounter", test.metricLabel, mock.Anything).Return(nil)
+			}
+			if test.serviceError == nil {
+				mockOrderEvent.On("Publish", mock.Anything).Return(test.publishError)
+			}
 			orderController := controllers.NewOrderController(context.Background(), mockOrderService, mockOrderEvent, mockMetrics)
 
 			fr := router.NewFiberRouter()
@@ -121,8 +153,8 @@ func TestOrderController_Post(t *testing.T) {
 			assert.Equal(t, test.expectedStatusCode, res.StatusCode)
 
 			mockOrderService.AssertExpectations(t)
-			mockOrderEvent.AssertExpectations(t)
 			mockMetrics.AssertExpectations(t)
+			mockOrderEvent.AssertExpectations(t)
 		})
 	}
 }

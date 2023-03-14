@@ -100,7 +100,7 @@ func (oc *orderController) Post(c *fiber.Ctx) error {
 	}
 	encodedOrder, err := json.Marshal(order)
 	if err != nil {
-		oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
+		// oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"order": nil,
 			"error": true,
