@@ -41,8 +41,8 @@ func (fr *fiberRouter) Delete(path string, f func(*fiber.Ctx) error) fiber.Route
 }
 
 // Group is a method for grouping routes
-func (fr *fiberRouter) Group(prefix string, f func(c *fiber.Ctx) error) fiber.Router {
-	return fr.app.Group(prefix, f)
+func (fr *fiberRouter) Group(prefix string, f ...func(c *fiber.Ctx) error) fiber.Router {
+	return fr.app.Group(prefix, f...)
 }
 
 // Use is a method for adding middleware to the router

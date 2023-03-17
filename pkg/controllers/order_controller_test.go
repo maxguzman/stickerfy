@@ -61,7 +61,7 @@ func TestOrderController_GetAll(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
 
-			req := httptest.NewRequest(http.MethodGet, "/orders", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/orders", nil)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -144,7 +144,7 @@ func TestOrderController_Post(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.OrderRoutes(fr, orderController)
 
-			req := httptest.NewRequest(http.MethodPost, "/order", body)
+			req := httptest.NewRequest(http.MethodPost, "/v1/order", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)

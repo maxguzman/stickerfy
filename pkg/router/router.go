@@ -12,7 +12,7 @@ type Router interface {
 	Post(path string, f func(*fiber.Ctx) error) fiber.Router
 	Put(path string, f func(*fiber.Ctx) error) fiber.Router
 	Delete(path string, f func(*fiber.Ctx) error) fiber.Router
-	Group(prefix string, f func(*fiber.Ctx) error) fiber.Router
+	Group(prefix string, f ...func(*fiber.Ctx) error) fiber.Router
 	Use(f func(*fiber.Ctx) error) fiber.Router
 	Serve()
 	ServeWithGracefulShutdown()

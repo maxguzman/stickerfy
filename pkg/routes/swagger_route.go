@@ -8,5 +8,7 @@ import (
 
 // SwaggerRoute func for describe group of API Docs routes.
 func SwaggerRoute(httpRouter router.Router) {
-	httpRouter.Get("/swagger/*", swagger.HandlerDefault)
+	route := httpRouter.Group("/swagger")
+
+	route.Get("*", swagger.HandlerDefault)
 }

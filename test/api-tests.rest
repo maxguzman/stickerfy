@@ -1,14 +1,14 @@
-GET http://0.0.0.0:8000/products
+GET http://0.0.0.0:8000/v1/products
 content-type: application/json
 
 ###
 
-GET http://0.0.0.0:8000/product/cedca7d9-a069-4dfd-8e4c-1cf3dda74779
+GET http://0.0.0.0:8000/v1/product/cedca7d9-a069-4dfd-8e4c-1cf3dda74779
 content-type: application/json
 
 ###
 
-POST http://0.0.0.0:8000/product
+POST http://0.0.0.0:8000/v1/product
 content-type: application/json
 
 {
@@ -20,7 +20,7 @@ content-type: application/json
 
 ###
 
-PUT  http://0.0.0.0:8000/product
+PUT  http://0.0.0.0:8000/v1/product
 content-type: application/json
 
 {
@@ -33,7 +33,7 @@ content-type: application/json
 
 ###
 
-DELETE  http://0.0.0.0:8000/product
+DELETE  http://0.0.0.0:8000/v1/product
 content-type: application/json
 
 {
@@ -46,12 +46,12 @@ content-type: application/json
 
 ###
 
-GET  http://0.0.0.0:8000/orders
+GET  http://0.0.0.0:8000/v1/orders
 content-type: application/json
 
 ###
 
-POST  http://0.0.0.0:8000/order
+POST  http://0.0.0.0:8000/v1/order
 content-type: application/json
 
 {

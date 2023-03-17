@@ -45,13 +45,13 @@ func (mr *muxRouter) Delete(path string, f func(*fiber.Ctx) error) fiber.Router 
 }
 
 // TODO: Implement Group and Use
-// Use is a function that adds middleware to the router
-func (mr *muxRouter) Use(f func(c *fiber.Ctx) error) fiber.Router {
+// Group is a function that groups routes
+func (mr *muxRouter) Group(prefix string, f ...func(c *fiber.Ctx) error) fiber.Router {
 	return nil
 }
 
-// Group is a function that groups routes
-func (mr *muxRouter) Group(prefix string, f func(c *fiber.Ctx) error) fiber.Router {
+// Use is a function that adds middleware to the router
+func (mr *muxRouter) Use(f func(c *fiber.Ctx) error) fiber.Router {
 	return nil
 }
 

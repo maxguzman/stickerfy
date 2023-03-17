@@ -64,7 +64,7 @@ func TestProductController_GetAll(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodGet, "/products", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/products", nil)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -111,7 +111,7 @@ func TestProductController_GetByID(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodGet, "/product/"+test.id, nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/product/"+test.id, nil)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -165,7 +165,7 @@ func TestProductController_Post(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodPost, "/product", body)
+			req := httptest.NewRequest(http.MethodPost, "/v1/product", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -220,7 +220,7 @@ func TestProductController_Delete(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodDelete, "/product/", body)
+			req := httptest.NewRequest(http.MethodDelete, "/v1/product/", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -275,7 +275,7 @@ func TestProductController_Update(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodPut, "/product/", body)
+			req := httptest.NewRequest(http.MethodPut, "/v1/product/", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
