@@ -27,16 +27,70 @@ import (
 func TestProductController_GetAll(t *testing.T) {
 	t.Parallel()
 
+	fakeEncodedProduct, _ := json.Marshal([]models.Product{
+		{
+			ID:          uuid.New(),
+			Title:       "test",
+			Description: "test",
+			Price:       1,
+			ImagePath:   "image.png",
+		},
+	})
+
 	tests := []struct {
 		description        string
 		cacheError         error
+		serviceProducts    []models.Product
 		serviceError       error
+		setCacheError      error
 		expectedStatusCode int
 	}{
 		{
-			description:        "should return 200 and products",
+			description:        "should return 200 and products when no cache hit",
 			cacheError:         redis.Nil,
+			serviceProducts:    []models.Product{},
 			serviceError:       nil,
+			setCacheError:      nil,
+			expectedStatusCode: http.StatusOK,
+		},
+		{
+			description:        "should return 500 and error when getting from service fails and no cache hit",
+			cacheError:         redis.Nil,
+			serviceProducts:    []models.Product{},
+			serviceError:       errors.New("error"),
+			setCacheError:      nil,
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			description:        "should return 404 and error when no products and no cache hit",
+			cacheError:         redis.Nil,
+			serviceProducts:    nil,
+			serviceError:       nil,
+			setCacheError:      nil,
+			expectedStatusCode: http.StatusNotFound,
+		},
+		{
+			description:        "should return 500 and error when set cache fails and no cache hit",
+			cacheError:         redis.Nil,
+			serviceProducts:    []models.Product{},
+			serviceError:       nil,
+			setCacheError:      errors.New("error"),
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			description:        "should return 500 and error when getting from cache fails",
+			cacheError:         errors.New("error"),
+			serviceProducts:    nil,
+			serviceError:       nil,
+			setCacheError:      nil,
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			description:        "should return 200 and products when cache hit",
+			cacheError:         nil,
+			serviceProducts:    nil,
+			serviceError:       nil,
+			setCacheError:      nil,
 			expectedStatusCode: http.StatusOK,
 		},
 	}
@@ -46,19 +100,13 @@ func TestProductController_GetAll(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
 			mockProductCache := mock_cache.NewCache(t)
 
-			encodedProducts, _ := json.Marshal([]models.Product{
-				{
-					ID:          uuid.New(),
-					Title:       "test",
-					Description: "test",
-					Price:       1,
-					ImagePath:   "image.png",
-				},
-			})
-
-			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(encodedProducts), test.cacheError)
-			mockProductService.On("GetAll", mock.Anything).Return([]models.Product{}, test.serviceError)
-			mockProductCache.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(fakeEncodedProduct), test.cacheError)
+			if test.cacheError == redis.Nil {
+				mockProductService.On("GetAll", mock.Anything).Return(test.serviceProducts, test.serviceError)
+			}
+			if test.serviceError == nil && test.serviceProducts != nil {
+				mockProductCache.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(test.setCacheError)
+			}
 			productController := controllers.NewProductController(context.Background(), mockProductService, mockProductCache)
 
 			fr := router.NewFiberRouter()
