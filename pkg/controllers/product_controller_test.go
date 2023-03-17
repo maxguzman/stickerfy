@@ -99,7 +99,6 @@ func TestProductController_GetAll(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
 			mockProductCache := mock_cache.NewCache(t)
-
 			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(fakeEncodedProduct), test.cacheError)
 			if test.cacheError == redis.Nil {
 				mockProductService.On("GetAll", mock.Anything).Return(test.serviceProducts, test.serviceError)
@@ -148,12 +147,20 @@ func TestProductController_GetByID(t *testing.T) {
 			serviceError:       errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
 		},
+		{
+			description:        "should return 400 and error",
+			id:                 "wrong-id",
+			serviceError:       errors.New("error"),
+			expectedStatusCode: http.StatusBadRequest,
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
-			mockProductService.On("GetByID", mock.Anything, mock.Anything).Return(models.Product{}, test.serviceError)
+			if test.id != "wrong-id" {
+				mockProductService.On("GetByID", mock.Anything, mock.Anything).Return(models.Product{}, test.serviceError)
+			}
 			productController := controllers.NewProductController(context.Background(), mockProductService, nil)
 
 			fr := router.NewFiberRouter()
@@ -176,6 +183,14 @@ func TestProductController_GetByID(t *testing.T) {
 func TestProductController_Post(t *testing.T) {
 	t.Parallel()
 
+	fakeProduct := models.Product{
+		ID:          uuid.New(),
+		Description: "Test product",
+		Price:       10.0,
+		Title:       "Test product",
+		ImagePath:   "https://example.com/image.png",
+	}
+
 	tests := []struct {
 		description        string
 		serviceError       error
@@ -196,13 +211,6 @@ func TestProductController_Post(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			body := new(bytes.Buffer)
-			fakeProduct := models.Product{
-				ID:          uuid.New(),
-				Description: "Test product",
-				Price:       10.0,
-				Title:       "Test product",
-				ImagePath:   "https://example.com/image.png",
-			}
 			err := json.NewEncoder(body).Encode(&fakeProduct)
 			assert.Nil(t, err)
 
@@ -226,22 +234,33 @@ func TestProductController_Post(t *testing.T) {
 	}
 }
 
-// TestProductController_Delete tests the Delete method of the ProductController
-func TestProductController_Delete(t *testing.T) {
+// TestProductController_Update tests the Update method of the ProductController
+func TestProductController_Update(t *testing.T) {
 	t.Parallel()
+
+	fakeProduct := models.Product{
+		ID:          uuid.New(),
+		Description: "Test product",
+		Price:       10.0,
+		Title:       "Test product",
+		ImagePath:   "https://example.com/image.png",
+	}
 
 	tests := []struct {
 		description        string
+		product            interface{}
 		serviceError       error
 		expectedStatusCode int
 	}{
 		{
 			description:        "should return 200",
+			product:            fakeProduct,
 			serviceError:       nil,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
 			description:        "should return 500 and error",
+			product:            fakeProduct,
 			serviceError:       errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
 		},
@@ -250,25 +269,16 @@ func TestProductController_Delete(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			body := new(bytes.Buffer)
-			fakeID := uuid.New()
-			fakeProduct := models.Product{
-				ID:          fakeID,
-				Description: "Test product",
-				Price:       10.0,
-				Title:       "Test product",
-				ImagePath:   "https://example.com/image.png",
-			}
-			err := json.NewEncoder(body).Encode(&fakeProduct)
+			err := json.NewEncoder(body).Encode(&test.product)
 			assert.Nil(t, err)
-
 			mockProductService := mock_services.NewProductService(t)
-			mockProductService.On("Delete", mock.Anything, mock.Anything).Return(test.serviceError)
+			mockProductService.On("Update", mock.Anything, mock.Anything).Return(test.serviceError)
 			productController := controllers.NewProductController(context.Background(), mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodDelete, "/v1/product/", body)
+			req := httptest.NewRequest(http.MethodPut, "/v1/product/", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -281,9 +291,17 @@ func TestProductController_Delete(t *testing.T) {
 	}
 }
 
-// TestProductController_Update tests the Update method of the ProductController
-func TestProductController_Update(t *testing.T) {
+// TestProductController_Delete tests the Delete method of the ProductController
+func TestProductController_Delete(t *testing.T) {
 	t.Parallel()
+
+	fakeProduct := models.Product{
+		ID:          uuid.New(),
+		Description: "Test product",
+		Price:       10.0,
+		Title:       "Test product",
+		ImagePath:   "https://example.com/image.png",
+	}
 
 	tests := []struct {
 		description        string
@@ -305,25 +323,17 @@ func TestProductController_Update(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			body := new(bytes.Buffer)
-			fakeID := uuid.New()
-			fakeProduct := models.Product{
-				ID:          fakeID,
-				Description: "Test product",
-				Price:       10.0,
-				Title:       "Test product",
-				ImagePath:   "https://example.com/image.png",
-			}
 			err := json.NewEncoder(body).Encode(&fakeProduct)
 			assert.Nil(t, err)
 
 			mockProductService := mock_services.NewProductService(t)
-			mockProductService.On("Update", mock.Anything, fakeProduct).Return(test.serviceError)
+			mockProductService.On("Delete", mock.Anything, mock.Anything).Return(test.serviceError)
 			productController := controllers.NewProductController(context.Background(), mockProductService, nil)
 
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodPut, "/v1/product/", body)
+			req := httptest.NewRequest(http.MethodDelete, "/v1/product/", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
