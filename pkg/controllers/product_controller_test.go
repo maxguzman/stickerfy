@@ -23,23 +23,24 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var fakeProduct = models.Product{
+	ID:          uuid.New(),
+	Title:       "fake title",
+	Description: "fake description",
+	Price:       1,
+	ImagePath:   "fake_image.png",
+}
+
 // TestProductController_GetAll tests the GetAll method of the ProductController
 func TestProductController_GetAll(t *testing.T) {
 	t.Parallel()
 
-	fakeEncodedProduct, _ := json.Marshal([]models.Product{
-		{
-			ID:          uuid.New(),
-			Title:       "test",
-			Description: "test",
-			Price:       1,
-			ImagePath:   "image.png",
-		},
-	})
+	fakeProducts := []models.Product{fakeProduct, fakeProduct}
+	encodedProducts, _ := json.Marshal(fakeProducts)
 
 	tests := []struct {
 		description        string
-		cacheError         error
+		getCacheError      error
 		serviceProducts    []models.Product
 		serviceError       error
 		setCacheError      error
@@ -47,39 +48,39 @@ func TestProductController_GetAll(t *testing.T) {
 	}{
 		{
 			description:        "should return 200 and products when no cache hit",
-			cacheError:         redis.Nil,
-			serviceProducts:    []models.Product{},
+			getCacheError:      redis.Nil,
+			serviceProducts:    fakeProducts,
 			serviceError:       nil,
 			setCacheError:      nil,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
-			description:        "should return 500 and error when getting from service fails and no cache hit",
-			cacheError:         redis.Nil,
-			serviceProducts:    []models.Product{},
+			description:        "should return 500 and error when no cache hit and getting from service fails",
+			getCacheError:      redis.Nil,
+			serviceProducts:    fakeProducts,
 			serviceError:       errors.New("error"),
 			setCacheError:      nil,
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
-			description:        "should return 404 and error when no products and no cache hit",
-			cacheError:         redis.Nil,
+			description:        "should return 404 and error when no cache hit and no products",
+			getCacheError:      redis.Nil,
 			serviceProducts:    nil,
 			serviceError:       nil,
 			setCacheError:      nil,
 			expectedStatusCode: http.StatusNotFound,
 		},
 		{
-			description:        "should return 500 and error when set cache fails and no cache hit",
-			cacheError:         redis.Nil,
-			serviceProducts:    []models.Product{},
+			description:        "should return 500 and error when no cache hit and set cache fails",
+			getCacheError:      redis.Nil,
+			serviceProducts:    fakeProducts,
 			serviceError:       nil,
 			setCacheError:      errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
 			description:        "should return 500 and error when getting from cache fails",
-			cacheError:         errors.New("error"),
+			getCacheError:      errors.New("error"),
 			serviceProducts:    nil,
 			serviceError:       nil,
 			setCacheError:      nil,
@@ -87,7 +88,7 @@ func TestProductController_GetAll(t *testing.T) {
 		},
 		{
 			description:        "should return 200 and products when cache hit",
-			cacheError:         nil,
+			getCacheError:      nil,
 			serviceProducts:    nil,
 			serviceError:       nil,
 			setCacheError:      nil,
@@ -99,8 +100,8 @@ func TestProductController_GetAll(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			mockProductService := mock_services.NewProductService(t)
 			mockProductCache := mock_cache.NewCache(t)
-			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(fakeEncodedProduct), test.cacheError)
-			if test.cacheError == redis.Nil {
+			mockProductCache.On("Get", mock.Anything, mock.Anything).Return(string(encodedProducts), test.getCacheError)
+			if test.getCacheError == redis.Nil {
 				mockProductService.On("GetAll", mock.Anything).Return(test.serviceProducts, test.serviceError)
 			}
 			if test.serviceError == nil && test.serviceProducts != nil {
@@ -183,14 +184,6 @@ func TestProductController_GetByID(t *testing.T) {
 func TestProductController_Post(t *testing.T) {
 	t.Parallel()
 
-	fakeProduct := models.Product{
-		ID:          uuid.New(),
-		Description: "Test product",
-		Price:       10.0,
-		Title:       "Test product",
-		ImagePath:   "https://example.com/image.png",
-	}
-
 	tests := []struct {
 		description        string
 		serviceError       error
@@ -237,14 +230,6 @@ func TestProductController_Post(t *testing.T) {
 // TestProductController_Update tests the Update method of the ProductController
 func TestProductController_Update(t *testing.T) {
 	t.Parallel()
-
-	fakeProduct := models.Product{
-		ID:          uuid.New(),
-		Description: "Test product",
-		Price:       10.0,
-		Title:       "Test product",
-		ImagePath:   "https://example.com/image.png",
-	}
 
 	tests := []struct {
 		description        string
@@ -295,14 +280,6 @@ func TestProductController_Update(t *testing.T) {
 func TestProductController_Delete(t *testing.T) {
 	t.Parallel()
 
-	fakeProduct := models.Product{
-		ID:          uuid.New(),
-		Description: "Test product",
-		Price:       10.0,
-		Title:       "Test product",
-		ImagePath:   "https://example.com/image.png",
-	}
-
 	tests := []struct {
 		description        string
 		serviceError       error
@@ -314,7 +291,7 @@ func TestProductController_Delete(t *testing.T) {
 			expectedStatusCode: http.StatusOK,
 		},
 		{
-			description:        "should return 500 and error",
+			description:        "should return 500 and error when service returns error",
 			serviceError:       errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
 		},

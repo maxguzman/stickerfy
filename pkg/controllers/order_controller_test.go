@@ -22,6 +22,21 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var fakeOrder = models.Order{
+	Items: []models.OrderItem{
+		{
+			Product: models.Product{
+				ID:          uuid.New(),
+				Description: "Test Product",
+				Price:       10.0,
+				ImagePath:   "test.png",
+				Title:       "Test Product",
+			},
+			Quantity: 1,
+		},
+	},
+}
+
 // TestOrderController_GetAll tests the GetAll method of the OrderController
 func TestOrderController_GetAll(t *testing.T) {
 	t.Parallel()
@@ -34,18 +49,18 @@ func TestOrderController_GetAll(t *testing.T) {
 	}{
 		{
 			description:        "should return 200 and orders",
-			serviceReturn:      []models.Order{},
+			serviceReturn:      []models.Order{fakeOrder},
 			serviceError:       nil,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
-			description:        "should return 500 and error",
-			serviceReturn:      []models.Order{},
+			description:        "should return 500 and error when getting orders fails",
+			serviceReturn:      []models.Order{fakeOrder},
 			serviceError:       errors.New("error"),
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
-			description:        "should return 404 and error",
+			description:        "should return 404 and error when no orders are found",
 			serviceReturn:      nil,
 			serviceError:       nil,
 			expectedStatusCode: http.StatusNotFound,
@@ -77,21 +92,6 @@ func TestOrderController_GetAll(t *testing.T) {
 // TestOrderController_Post tests the Post method of the OrderController
 func TestOrderController_Post(t *testing.T) {
 	t.Parallel()
-
-	fakeOrder := models.Order{
-		Items: []models.OrderItem{
-			{
-				Product: models.Product{
-					ID:          uuid.New(),
-					Description: "Test Product",
-					Price:       10.0,
-					ImagePath:   "test.png",
-					Title:       "Test Product",
-				},
-				Quantity: 1,
-			},
-		},
-	}
 
 	tests := []struct {
 		description        string
