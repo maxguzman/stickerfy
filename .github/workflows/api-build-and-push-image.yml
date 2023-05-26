@@ -1,4 +1,4 @@
-name: Create and publish Docker image
+name: Build and publish API Docker image
 
 on:
   workflow_run:
