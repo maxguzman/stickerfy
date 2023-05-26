@@ -10,3 +10,13 @@ tmp/
 
 # Environment variables
 .env
+.env.*
+!.env.example
+
+# Node and svelte
+node_modules
+target
+.svelte-kit
+/package
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

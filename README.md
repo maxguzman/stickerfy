@@ -12,15 +12,6 @@ The application architecture is based on Docker containers, there is a `Makefile
 
 ## Quick start
 
-To make this application run on your local machine you need [Docker Engine](https://docs.docker.com/engine/install/) installed, once you have it, clone this repo and start the application using these commands:
-
-```bash
-make docker.dev-dependencies
-make docker.stickerfy
-```
-
-Or just run the following command that make both
-
 ```bash
 make docker.run
 ```
@@ -31,19 +22,3 @@ When it's ready you can execute the following:
 - Launch the API docs: [http://localhost:8000/swagger](http://localhost:8000/swagger)
 - Launch Prometheus: [http://localhost:9090](http://localhost:9090)
 - Launch Grafana (there is an already configured dashboard): [http://localhost:3000](http://localhost:3000) (user: admin, pass: admin)
-
-## Set up the development environment
-
-For coding this app you don't want to deploy it to Docker, instead follow these steps:
-
-- Setup the dev dependencies
-
-```bash
-make docker.dev-dependencies
-```
-
-- Set the local environment variables and run the app:
-
-```bash
-make dev
-```

@@ -1,47 +1,28 @@
-.PHONY: clean critic security lint test build run
-
-APP_NAME = stickerfy
-BUILD_DIR = $(PWD)/build
-
-clean:
-	rm -rf ./build cover.out
-
-critic:
-	gocritic check -enableAll ./...
-
-security:
-	gosec ./...
-
-lint:
-	golangci-lint run ./...
-
-test: clean critic security lint
-	go test -v -timeout 30s -coverprofile=cover.out -cover ./...
-	go tool cover -func=cover.out
-
-build: test
-	GOARCH=amd64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) .
-
-run: swag build
-	$(BUILD_DIR)/$(APP_NAME)
-
-swag:
-	swag init
+docker.run: docker.dev-dependencies docker.stickerfy-api docker.stickerfy-webapp
 
 docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana
-
-docker.run: docker.dev-dependencies swag docker.stickerfy
 
 docker.network:
 	docker network inspect dev-network >/dev/null 2>&1 || \
 	docker network create -d bridge dev-network
 
-docker.stickerfy.build:
-	docker build -t stickerfy .
+docker.stickerfy-webapp.build:
+	docker build -t stickerfy-webapp ./webapp
 
-docker.stickerfy: docker.stickerfy.build
+docker.stickerfy-webapp: docker.stickerfy-webapp.build
 	docker run --rm -d \
-		--name stickerfy \
+		--name stickerfy-webapp \
+		--network dev-network \
+		-p 8080:8080 \
+		-e STICKERFY_SERVICE_URL="http://stickerfy-api:8000/v1" \
+		stickerfy-webapp
+
+docker.stickerfy-api.build:
+	docker build -t stickerfy-api ./api
+
+docker.stickerfy-api: docker.stickerfy-api.build
+	docker run --rm -d \
+		--name stickerfy-api \
 		--network dev-network \
 		-p 8000:8000 \
 		-e ENV="dev" \
@@ -60,7 +41,7 @@ docker.stickerfy: docker.stickerfy.build
 		-e REDIS_PASSWORD="secret" \
 		-e KAFKA_BROKERS="broker:29092" \
 		-e TOPIC_NAME="stickerfy_order_added" \
-		stickerfy
+		stickerfy-api
 
 docker.redis:
 	docker run --rm -d \
@@ -77,7 +58,7 @@ docker.mongo:
 		-p 27017:27017 \
 		-e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
 		-e MONGO_INITDB_ROOT_PASSWORD=secret \
-		mongo
+		mongo:4.4.16
 
 docker.zookeeper:
 	docker run --rm -d \
@@ -108,7 +89,7 @@ docker.prometheus:
 		--name prometheus \
 		--network dev-network \
 		-p 9090:9090 \
-		-v $(shell pwd)/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+		-v $(shell pwd)/api/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
     prom/prometheus
 
 docker.grafana:
@@ -116,18 +97,21 @@ docker.grafana:
 		--name grafana \
 		--network dev-network \
 		-p 3000:3000 \
-		-v $(shell pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-		-v $(shell pwd)/config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/local.yml \
-		-v $(shell pwd)/config/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json \
+		-v $(shell pwd)/api/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
+		-v $(shell pwd)/api/config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/local.yml \
+		-v $(shell pwd)/api/config/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json \
 		-e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource" \
     grafana/grafana-oss
 
-docker.stop: docker.stop.stickerfy docker.stop.dev-dependencies
+docker.stop: docker.stop.stickerfy-webapp docker.stop.stickerfy-api docker.stop.dev-dependencies
 
 docker.stop.dev-dependencies: docker.stop.redis docker.stop.mongo docker.stop.zookeeper docker.stop.kafka docker.stop.prometheus docker.stop.grafana
 
-docker.stop.stickerfy:
-	docker stop stickerfy
+docker.stop.stickerfy-webapp:
+	docker stop stickerfy-webapp
+
+docker.stop.stickerfy-api:
+	docker stop stickerfy-api
 
 docker.stop.redis:
 	docker stop redis
@@ -147,26 +131,6 @@ docker.stop.prometheus:
 docker.stop.grafana:
 	docker stop grafana
 
-docker.scan:
-	docker scan stickerfy
-
-docker.refresh: docker.stop.stickerfy swag docker.stickerfy
-
-dev:
-	@ENV="dev" \
-	SERVER_HOST="0.0.0.0" \
-	SERVER_PORT="8000" \
-	READ_TIMEOUT=15 \
-	WRITE_TIMEOUT=15 \
-	IDLE_TIMEOUT=60 \
-	MONGO_USER="mongoadmin" \
-	MONGO_PASSWORD="secret" \
-	MONGO_HOST="0.0.0.0" \
-	MONGO_PORT="27017" \
-	MONGO_DATABASE="stickerfy" \
-	REDIS_HOST="0.0.0.0" \
-	REDIS_PORT="6379" \
-	REDIS_PASSWORD="secret" \
-	KAFKA_BROKERS="localhost:9092" \
-	TOPIC_NAME="stickerfy_order_added" \
-	go run main.go
+docker.scout:
+	docker scout recommendations stickerfy-api && \
+	docker scout recommendations stickerfy-webapp
