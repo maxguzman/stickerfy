@@ -1,5 +1,5 @@
 name: Run go tests
-run-name: Automated tests
+run-name: Automated golang tests and coverage
 
 on:
   workflow_run:

@@ -2,13 +2,13 @@ name: Create and publish Docker image
 
 on:
   workflow_run:
-    workflows: [Run go tests]
+    workflows: [Run jest tests]
     types:
       - completed
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}-webapp
 
 jobs:
   build-and-push-image:

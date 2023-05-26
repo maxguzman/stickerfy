@@ -3,11 +3,15 @@ run-name: Code audit, security scanner and linting
 
 on:
   push:
+    paths:
+      - 'api/**'
     branches:
       - main
     tags:
       - 'v*'
   pull_request:
+    paths:
+      - 'api/**'
     branches:
       - main
 
