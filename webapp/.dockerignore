@@ -1,0 +1,15 @@
+# Files
+.dockerignore
+.editorconfig
+.gitignore
+.env.*
+Dockerfile
+Makefile
+LICENSE
+**/*.md
+*.out
+
+# Folders
+.git/
+.github/
+build/
