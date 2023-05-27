@@ -1,4 +1,4 @@
-docker.run: docker.dev-dependencies docker.stickerfy-api docker.stickerfy-webapp
+docker.run: docker.dev-dependencies docker.stickerfy-api docker.stickerfy-webapp docker.import-products
 
 docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana
 
@@ -134,3 +134,17 @@ docker.stop.grafana:
 docker.scout:
 	docker scout recommendations stickerfy-api && \
 	docker scout recommendations stickerfy-webapp
+
+docker.import-products:
+	docker run --rm \
+		--network dev-network \
+		-v $(shell pwd)/static/stickerfy.products.json:/stickerfy.products.json \
+		mongo \
+		mongoimport \
+		-h mongo:27017 \
+		-d stickerfy \
+		-c products \
+		-u mongoadmin \
+		-p secret \
+		--authenticationDatabase admin \
+		--file /stickerfy.products.json
