@@ -1114,8 +1114,8 @@
       {
         "current": {
           "selected": false,
-          "text": "stickerfy:8000",
-          "value": "stickerfy:8000"
+          "text": "stickerfy-api:8000",
+          "value": "stickerfy-api:8000"
         },
         "datasource": {
           "type": "prometheus",

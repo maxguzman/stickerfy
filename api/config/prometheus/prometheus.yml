@@ -5,7 +5,7 @@ global:
 scrape_configs:
   - job_name: stickerfy
     static_configs:
-      - targets: ["stickerfy:8000"]
+      - targets: ["stickerfy-api:8000"]
         labels:
           app: stickerfy
           env: dev
