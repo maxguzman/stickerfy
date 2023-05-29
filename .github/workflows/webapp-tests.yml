@@ -29,6 +29,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: |
-          cd webapp/ && yarn install
+      - name: Install dependencies
+        run: yarn install
+        working-directory: webapp/
       - run: yarn test
+        working-directory: webapp/
