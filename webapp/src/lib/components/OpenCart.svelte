@@ -4,7 +4,7 @@
 
 <button
 	class="btn"
-  data-testid="openCheckout"
+	data-testid="openCheckout"
 	on:click={() =>
 		$shoppingCart.length > 0 ? ($checkoutVisible = true) : ($checkoutVisible = false)}
 	disabled={!$shoppingCart.length}

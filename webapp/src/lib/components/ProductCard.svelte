@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Product, CartItem } from '$lib/models/types';
-	import { shoppingCart, addToCart, plusItem, minusItem } from '$lib/stores/shoppingCart';
-	export let product: Product;
+	import type { Product, CartItem } from '$lib/models/types'
+	import { shoppingCart, addToCart, plusItem, minusItem } from '$lib/stores/shoppingCart'
+	export let product: Product
 	$: currentItem = $shoppingCart.find(
 		(item: CartItem): Boolean => (item.product.id === product.id ? true : false)
 	)
@@ -27,7 +27,7 @@
 					class="btn btn-primary"
 					data-testid="add-{product.id}"
 					on:click={() => {
-						addToCart(product);
+						addToCart(product)
 					}}
 				>
 					Add to cart!
@@ -41,7 +41,7 @@
 						class="btn btn-sms"
 						data-testid="minus-{product.id}"
 						on:click={() => {
-							minusItem(product);
+							minusItem(product)
 						}}
 					>
 						<i class="fa-solid fa-minus" />
@@ -51,7 +51,7 @@
 						class="btn btn-sms"
 						data-testid="plus-{product.id}"
 						on:click={() => {
-							plusItem(product);
+							plusItem(product)
 						}}
 					>
 						<i class="fa-solid fa-plus" />

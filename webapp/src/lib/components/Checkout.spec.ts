@@ -38,7 +38,7 @@ describe('Checkout process', () => {
   it('should insert the order and receive a confirmation summary', async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({error: false, msg:null, order:{}  }),
+        json: () => Promise.resolve({ error: false, msg: null, order: {} }),
       }),
     ) as jest.Mock
     const mockCart = [
