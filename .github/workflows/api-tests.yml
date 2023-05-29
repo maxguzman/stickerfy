@@ -35,7 +35,7 @@ jobs:
       - name: Run code audit
         run: gocritic check -enableAll ./api/...
       - name: Install Gosec Security Scanner
-        run: go install -v github.com/securego/gosec/cmd/gosec@latest
+        run: curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin vX.Y.Z
       - name: Run Gosec Security Scanner
         run: gosec ./...
         working-directory: api/
