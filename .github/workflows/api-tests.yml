@@ -37,7 +37,8 @@ jobs:
       - name: Install Gosec Security Scanner
         run: go install -v github.com/securego/gosec/cmd/gosec@latest
       - name: Run Gosec Security Scanner
-        run: gosec -quiet -fmt=json -out=gosec.json ./api/...
+        run: gosec ./...
+        working-directory: api/
       - name: Install golangci-lint
         run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.1
       - name: golangci-lint
