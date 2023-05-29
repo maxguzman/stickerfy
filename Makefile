@@ -1,3 +1,9 @@
+REDIS_VERSION :=7.0.11
+MONGO_VERSION := 4.4.16
+CONFLUENT_VERSION := 7.3.0
+PROMETHEUS_VERSION := v2.44.0
+GRAFANA_VERSION := 9.5.2
+
 docker.run: docker.dev-dependencies docker.stickerfy-api docker.stickerfy-webapp docker.import-products
 
 docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana
@@ -48,7 +54,7 @@ docker.redis:
 		--name redis \
 		--network dev-network \
 		-p 6379:6379 \
-		redis \
+		redis:$(REDIS_VERSION) \
 		-- requirepass "secret"
 
 docker.mongo:
@@ -58,7 +64,7 @@ docker.mongo:
 		-p 27017:27017 \
 		-e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
 		-e MONGO_INITDB_ROOT_PASSWORD=secret \
-		mongo:4.4.16
+		mongo:$(MONGO_VERSION)
 
 docker.zookeeper:
 	docker run --rm -d \
@@ -67,7 +73,7 @@ docker.zookeeper:
 		-p 2181:2181 \
     -e ZOOKEEPER_CLIENT_PORT=2181 \
     -e ZOOKEEPER_TICK_TIME=2000 \
-		confluentinc/cp-zookeeper:7.3.0
+		confluentinc/cp-zookeeper:$(CONFLUENT_VERSION)
 
 docker.kafka:
 	docker run --rm -d \
@@ -82,7 +88,7 @@ docker.kafka:
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
     -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
-		confluentinc/cp-kafka:7.3.0
+		confluentinc/cp-kafka:$(CONFLUENT_VERSION)
 
 docker.prometheus:
 	docker run --rm -d \
@@ -90,7 +96,7 @@ docker.prometheus:
 		--network dev-network \
 		-p 9090:9090 \
 		-v $(shell pwd)/api/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-    prom/prometheus
+    prom/prometheus:$(PROMETHEUS_VERSION)
 
 docker.grafana:
 	docker run --rm -d \
@@ -101,7 +107,7 @@ docker.grafana:
 		-v $(shell pwd)/api/config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/local.yml \
 		-v $(shell pwd)/api/config/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json \
 		-e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource" \
-    grafana/grafana-oss
+    grafana/grafana-oss:$(GRAFANA_VERSION)
 
 docker.stop: docker.stop.stickerfy-webapp docker.stop.stickerfy-api docker.stop.dev-dependencies
 
