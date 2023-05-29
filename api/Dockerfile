@@ -1,7 +1,7 @@
 FROM golang:alpine as builder
 LABEL maintainer="Max Guzman <max.guzman@icloud.com>"
 RUN mkdir -p /build
-ADD . /build
+ADD ./api /build
 WORKDIR /build
 RUN apk add --no-cache git gcc musl-dev
 RUN GOOS=linux GOARCH=amd64 go build -tags musl -o stickerfy .

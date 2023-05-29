@@ -1,6 +1,6 @@
 FROM node:18-alpine as build
 WORKDIR /app
-COPY . .
+COPY ./webapp .
 RUN yarn
 RUN yarn build
 
