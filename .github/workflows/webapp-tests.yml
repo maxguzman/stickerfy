@@ -1,5 +1,4 @@
-name: Run jest tests
-run-name: Automated jest tests and coverage
+name: Webapp automated tests
 
 on:
   push:
@@ -30,5 +29,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
+      - run: |
+          cd webapp/ && yarn install
       - run: yarn test

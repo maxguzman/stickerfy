@@ -1,5 +1,4 @@
-name: Run pre-build checks
-run-name: Code audit, security scanner and linting
+name: Go pre-build checks and tests
 
 on:
   push:
