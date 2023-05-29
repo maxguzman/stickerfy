@@ -28,24 +28,23 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: |
-          go mod download
+        run: go mod download
+        working-directory: api/
       - name: Install go-critic
-        run: |
-          go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+        run: go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+        working-directory: api/
       - name: Run code audit
-        run: |
-          gocritic check -enableAll ./...
+        run: gocritic check -enableAll ./...
+        working-directory: api/
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: ./...
+          args: ./api/...
       - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.1
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.51.1
       - name: golangci-lint
-        run: |
-          golangci-lint run ./... --timeout 5m
+        run: golangci-lint run ./... --timeout 5m
+        working-directory: api/
 
   test:
     name: test
@@ -60,13 +59,13 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: |
-          go mod download
+        run: go mod download
+        working-directory: api/
       - name: Test
-        run: |
-          go test -v -timeout 30s -coverprofile=cover.out -cover ./...
+        run: go test -v -timeout 30s -coverprofile=cover.out -cover ./...
+        working-directory: api/
       - name: Coverage
-        run: |
-          go tool cover -func=cover.out
+        run: go tool cover -func=../cover.out
+        working-directory: api/
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

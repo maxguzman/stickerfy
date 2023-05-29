@@ -15,3 +15,4 @@ When it's ready you can execute the following:
 - Launch the API docs: [http://localhost:8000/swagger](http://localhost:8000/swagger)
 - Launch Prometheus: [http://localhost:9090](http://localhost:9090)
 - Launch Grafana (there is an already configured dashboard): [http://localhost:3000](http://localhost:3000) (user: admin, pass: admin)
+
