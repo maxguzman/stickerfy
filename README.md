@@ -18,7 +18,8 @@ make docker.run
 
 When it's ready you can execute the following:
 
-- Test if the API is working: `curl http://localhost:8000/products`
+- Access to the UI: [http://localhost:8080](http://localhost:8080)
+- Test if the API is working: `curl http://localhost:8000/vi/products`
 - Launch the API docs: [http://localhost:8000/swagger](http://localhost:8000/swagger)
 - Launch Prometheus: [http://localhost:9090](http://localhost:9090)
-- Launch Grafana (there is an already configured dashboard): [http://localhost:3000](http://localhost:3000) (user: admin, pass: admin)
+- Launch [Grafana dashboard](http://localhost:3000/d/Du-6hDx4k/stickerfy-store?orgId=1) (user: admin, pass: admin)
