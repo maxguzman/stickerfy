@@ -15,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./api/Dockerfile
+          - dockerfile: ./docker/Dockerfile_api
             image: ghcr.io/maxguzman/stickerfy-api
-          - dockerfile: ./webapp/Dockerfile
+          - dockerfile: ./docker/Dockerfile_webapp
             image: ghcr.io/maxguzman/stickerfy-webapp
     permissions:
       contents: read
