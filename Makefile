@@ -1,12 +1,14 @@
 REDIS_VERSION :=7.0.11
-MONGO_VERSION := 4.4.16
+MONGO_VERSION := 4.4.6
 CONFLUENT_VERSION := 7.3.0
 PROMETHEUS_VERSION := v2.44.0
 GRAFANA_VERSION := 9.5.2
+JAEGER_VERSION := 1.47
+OTEL_COLLECTOR_VERSION := 0.83.0
 
 docker.run: docker.dev-dependencies docker.stickerfy-api docker.stickerfy-webapp docker.import-products
 
-docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana
+docker.dev-dependencies: docker.network docker.redis docker.mongo docker.zookeeper docker.kafka docker.prometheus docker.grafana docker.jaeger docker.otel-collector
 
 docker.network:
 	docker network inspect dev-network >/dev/null 2>&1 || \
@@ -21,6 +23,7 @@ docker.stickerfy-webapp: docker.stickerfy-webapp.build
 		--network dev-network \
 		-p 8080:8080 \
 		-e STICKERFY_SERVICE_URL="http://stickerfy-api:8000/v1" \
+		-e OTEL_COLLECTOR_OTPL_TRACES_ENDPOINT="grpc://otel-collector:4317" \
 		stickerfy-webapp
 
 docker.stickerfy-api.build:
@@ -109,9 +112,36 @@ docker.grafana:
 		-e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource" \
     grafana/grafana-oss:$(GRAFANA_VERSION)
 
+docker.jaeger:
+	docker run --rm -d \
+		--name jaeger \
+		--network dev-network \
+		-e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
+		-e COLLECTOR_OTLP_ENABLED=true \
+		-e METRICS_STORAGE_TYPE=prometheus \
+		-e PROMETHEUS_SERVER_URL=http://prometheus:9090 \
+		-p 6831:6831/udp \
+		-p 6832:6832/udp \
+		-p 5778:5778 \
+		-p 16686:16686 \
+		-p 14250:14250 \
+		-p 14268:14268 \
+		-p 14269:14269 \
+		-p 9411:9411 \
+		jaegertracing/all-in-one:$(JAEGER_VERSION)
+
+docker.otel-collector:
+	docker run --rm -d \
+    --name otel-collector \
+    --network dev-network \
+    -p 4317:4317/tcp \
+    -p 4318:4318/tcp \
+    -v $(PWD)/api/config/otel/otel-config.yaml:/tmp/otel-config.yaml \
+    otel/opentelemetry-collector:$(OTEL_COLLECTOR_VERSION) --config /tmp/otel-config.yaml
+
 docker.stop: docker.stop.stickerfy-webapp docker.stop.stickerfy-api docker.stop.dev-dependencies
 
-docker.stop.dev-dependencies: docker.stop.redis docker.stop.mongo docker.stop.zookeeper docker.stop.kafka docker.stop.prometheus docker.stop.grafana
+docker.stop.dev-dependencies: docker.stop.redis docker.stop.mongo docker.stop.zookeeper docker.stop.kafka docker.stop.prometheus docker.stop.grafana docker.stop.jaeger docker.stop.otel-collector
 
 docker.stop.stickerfy-webapp:
 	docker stop stickerfy-webapp
@@ -137,6 +167,12 @@ docker.stop.prometheus:
 docker.stop.grafana:
 	docker stop grafana
 
+docker.stop.jaeger:
+	docker stop jaeger
+
+docker.stop.otel-collector:
+	docker stop otel-collector
+
 docker.scout:
 	docker scout recommendations stickerfy-api && \
 	docker scout recommendations stickerfy-webapp
@@ -145,7 +181,7 @@ docker.import-products:
 	docker run --rm \
 		--network dev-network \
 		-v $(shell pwd)/static/stickerfy.products.json:/stickerfy.products.json \
-		mongo \
+		mongo:$(MONGO_VERSION) \
 		mongoimport \
 		-h mongo:27017 \
 		-d stickerfy \
