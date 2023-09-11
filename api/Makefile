@@ -48,4 +48,5 @@ dev:
 	REDIS_PASSWORD="secret" \
 	KAFKA_BROKERS="localhost:9092" \
 	TOPIC_NAME="stickerfy_order_added" \
+	OTEL_COLLECTOR_ENDPOINT="localhost:4317" \
 	go run main.go

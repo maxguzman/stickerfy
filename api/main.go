@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
@@ -12,6 +13,7 @@ import (
 	"stickerfy/pkg/platform/events"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
+	"stickerfy/pkg/utils"
 
 	_ "stickerfy/docs"
 )
@@ -54,6 +56,13 @@ func main() {
 	routes.OrderRoutes(httpRouter, orderController)
 	routes.MetricsRoute(httpRouter)
 	routes.NotFoundRoute(httpRouter)
+
+	tp := utils.InitTracer(ctx)
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
 
 	if os.Getenv("ENV") == "dev" {
 		httpRouter.Serve()

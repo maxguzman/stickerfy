@@ -24,6 +24,7 @@
         "REDIS_PASSWORD":"secret",
         "KAFKA_BROKERS": "0.0.0.0:9092",
         "TOPIC_NAME": "stickerfy_order_added",
+        "OTEL_COLLECTOR_ENDPOINT": "0.0.0.0:4317"
       },
       "args": []
     }
