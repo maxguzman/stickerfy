@@ -7,8 +7,6 @@ import (
 
 // OrderRoutes registers all public routes
 func OrderRoutes(httpRouter router.Router, orderController controllers.OrderController) {
-	route := httpRouter.Group("/v1")
-
-	route.Get("/orders", orderController.GetAll)
-	route.Post("/order", orderController.Post)
+	httpRouter.Get("/orders", orderController.GetAll)
+	httpRouter.Post("/orders", orderController.Post)
 }

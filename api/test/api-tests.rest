@@ -1,57 +1,57 @@
-GET http://0.0.0.0:8000/v1/products
+GET http://0.0.0.0:8000/products
 content-type: application/json
 
 ###
 
-GET http://0.0.0.0:8000/v1/product/cedca7d9-a069-4dfd-8e4c-1cf3dda74779
+GET http://0.0.0.0:8000/product/cedca7d9-a069-4dfd-8e4c-1cf3dda74779
 content-type: application/json
 
 ###
 
-POST http://0.0.0.0:8000/v1/product
+POST http://0.0.0.0:8000/product
 content-type: application/json
 
 {
-	"title": "Happy",
-	"image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
-	"description": "Very happy sticker!",
+	"title": "Grumpy Cat",
+	"image_path": "https://storage.googleapis.com/stickerfy/5845e17e7733c3558233c0ef.png",
+	"description": "I'm always angry!",
 	"price": 5.5
 }
 
 ###
 
-PUT  http://0.0.0.0:8000/v1/product
+PUT  http://0.0.0.0:8000/product
 content-type: application/json
 
 {
   "id": "ad64f2c5-8799-40e2-86d7-686b5f40e989",
-  "image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
-  "title": "Happy",
-  "description": "Very happy sticker!",
+  "image_path": "https://storage.googleapis.com/stickerfy/5845e17e7733c3558233c0ef.png",
+  "title": "Grumpy Cat",
+  "description": "I'm always angry!",
   "price": 7.5
 }
 
 ###
 
-DELETE  http://0.0.0.0:8000/v1/product
+DELETE  http://0.0.0.0:8000/product
 content-type: application/json
 
 {
   "id": "ad64f2c5-8799-40e2-86d7-686b5f40e989",
-  "image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
-  "title": "Happy",
-  "description": "Very happy sticker!",
+  "image_path": "https://storage.googleapis.com/stickerfy/5845e17e7733c3558233c0ef.png",
+  "title": "Grumpy Cat",
+  "description": "I'm always angry!",
   "price": 7.5
 }
 
 ###
 
-GET  http://0.0.0.0:8000/v1/orders
+GET  http://0.0.0.0:8000/orders
 content-type: application/json
 
 ###
 
-POST  http://0.0.0.0:8000/v1/order
+POST  http://0.0.0.0:8000/order
 content-type: application/json
 
 {
@@ -59,9 +59,9 @@ content-type: application/json
 		{
 			"product": {
 				"id": "8a03519b-82c2-4a6c-a673-784d13cbbcfc",
-				"title": "Happy",
-				"image_path": "https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png",
-				"description": "Very happy sticker!",
+				"title": "Grumpy Cat",
+				"image_path": "https://storage.googleapis.com/stickerfy/5845e17e7733c3558233c0ef.png",
+				"description": "I'm always angry!",
 				"price": 5.5
 			},
 			"quantity": 1
