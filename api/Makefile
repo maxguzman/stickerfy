@@ -20,7 +20,7 @@ test: clean critic security lint
 	go tool cover -func=cover.out
 
 build: test
-	GOARCH=amd64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) .
+	GOOS=darwin GOARCH=arm64 go build -tags musl -o $(BUILD_DIR)/$(APP_NAME) .
 
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
@@ -48,4 +48,5 @@ dev:
 	REDIS_PASSWORD="secret" \
 	KAFKA_BROKERS="localhost:9092" \
 	TOPIC_NAME="stickerfy_order_added" \
+	OTEL_COLLECTOR_ENDPOINT="localhost:4317" \
 	go run main.go

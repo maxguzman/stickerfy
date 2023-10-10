@@ -112,7 +112,7 @@ func TestProductController_GetAll(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodGet, "/v1/products", nil)
+			req := httptest.NewRequest(http.MethodGet, "/products", http.NoBody)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -167,7 +167,7 @@ func TestProductController_GetByID(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodGet, "/v1/product/"+test.id, nil)
+			req := httptest.NewRequest(http.MethodGet, "/products/"+test.id, http.NoBody)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -190,9 +190,9 @@ func TestProductController_Post(t *testing.T) {
 		expectedStatusCode int
 	}{
 		{
-			description:        "should return 200",
+			description:        "should return 201",
 			serviceError:       nil,
-			expectedStatusCode: http.StatusOK,
+			expectedStatusCode: http.StatusCreated,
 		},
 		{
 			description:        "should return 500 and error",
@@ -214,7 +214,7 @@ func TestProductController_Post(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodPost, "/v1/product", body)
+			req := httptest.NewRequest(http.MethodPost, "/products", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -263,7 +263,7 @@ func TestProductController_Update(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodPut, "/v1/product/", body)
+			req := httptest.NewRequest(http.MethodPut, "/products", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)
@@ -310,7 +310,7 @@ func TestProductController_Delete(t *testing.T) {
 			fr := router.NewFiberRouter()
 			routes.ProductRoutes(fr, productController)
 
-			req := httptest.NewRequest(http.MethodDelete, "/v1/product/", body)
+			req := httptest.NewRequest(http.MethodDelete, "/products", body)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := fr.Test(req)

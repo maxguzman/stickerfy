@@ -10,5 +10,5 @@ type Product struct {
 	ImagePath   string    `json:"image_path" validate:"required,lte=255"`
 	Title       string    `json:"title" validate:"required,lte=255"`
 	Description string    `json:"description" validate:"required,lte=255"`
-	Price       float64   `json:"price" validate:"required,min=0"`
+	Price       float64   `json:"price" validate:"required,min=0" format:"float"`
 }

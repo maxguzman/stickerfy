@@ -38,13 +38,16 @@ func NewOrderController(ctx context.Context, orderService services.OrderService,
 }
 
 // GetAll returns all orders
-// @Description Get all exists orders.
-// @Summary get all exists orders
-// @Tags Order
-// @Accept json
-// @Produce json
-// @Success 200 {array} models.Product
-// @Router /orders [get]
+//	@Description	Get all exists orders.
+//	@Summary		get all exists orders
+//	@Tags			Order
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	map[string]interface{}
+//	@Failure		400	{object}	map[string]interface{}
+//	@Failure		404	{object}	map[string]interface{}
+//	@Failure		500	{object}	map[string]interface{}
+//	@Router			/orders [get]
 func (oc *orderController) GetAll(c *fiber.Ctx) error {
 	orders, err := oc.orderService.GetAll(oc.context)
 	if err != nil {
@@ -71,14 +74,16 @@ func (oc *orderController) GetAll(c *fiber.Ctx) error {
 }
 
 // Post creates a new order
-// @Description Create a new order.
-// @Summary create a new order
-// @Tags Order
-// @Accept json
-// @Produce json
-// @Param order body models.Order true "Order"
-// @Success 200 {object} models.Order
-// @Router /order [post]
+//	@Description	Create a new order.
+//	@Summary		create a new order
+//	@Tags			Order
+//	@Accept			json
+//	@Produce		json
+//	@Param			order	body		models.Order	true	"Order"
+//	@Success		201		{object}	models.Order
+//	@Failure		400		{object}	map[string]interface{}
+//	@Failure		500		{object}	map[string]interface{}
+//	@Router			/orders [post]
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
 	order.ID = uuid.New()

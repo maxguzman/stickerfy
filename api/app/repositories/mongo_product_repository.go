@@ -21,15 +21,11 @@ type mongoProductRepository struct {
 // NewMongoProductRepository creates a new ProductRepository
 func NewMongoProductRepository(ctx context.Context, collection string) ProductRepository {
 	uri := configs.NewMongoConfig().GetURI()
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
 	}
 
-	err = client.Connect(ctx)
-	if err != nil {
-		panic(err)
-	}
 	return &mongoProductRepository{client, collection}
 }
 

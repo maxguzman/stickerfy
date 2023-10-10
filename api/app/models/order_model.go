@@ -13,5 +13,5 @@ type Order struct {
 // OrderItem represents an item in an order
 type OrderItem struct {
 	Product  Product `json:"product" validate:"required"`
-	Quantity int   `json:"quantity" validate:"required,min=1"`
+	Quantity int   `json:"quantity" validate:"required,min=1" format:"int32"`
 }
