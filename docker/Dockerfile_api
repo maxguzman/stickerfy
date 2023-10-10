@@ -1,5 +1,4 @@
 FROM golang:alpine as builder
-LABEL maintainer="Max Guzman <max.guzman@icloud.com>"
 RUN mkdir -p /build
 ADD ./api /build
 WORKDIR /build
