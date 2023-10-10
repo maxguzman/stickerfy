@@ -12,7 +12,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.49.1
 	github.com/gofiber/jwt/v2 v2.2.7
 	github.com/gofiber/swagger v0.1.13
-	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/mikhail-bigun/fiberlogrus v0.1.1
