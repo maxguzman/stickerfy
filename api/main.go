@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"stickerfy/app/repositories"
 	"stickerfy/app/services"
@@ -12,6 +13,7 @@ import (
 	"stickerfy/pkg/platform/events"
 	"stickerfy/pkg/router"
 	"stickerfy/pkg/routes"
+	"stickerfy/pkg/utils"
 
 	_ "stickerfy/docs"
 )
@@ -35,18 +37,16 @@ var (
 	httpRouter        router.Router                  = router.NewFiberRouter()
 )
 
-// @title Stickerfy API
-// @version 1.0
-// @description A fun sticker store REST API
-// @termsOfService http://swagger.io/terms/
-// @contact.name Max Guzman
-// @contact.email max.guzman@icloud.com
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @BasePath /
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
+// @title			Stickerfy API
+// @version		1.0
+// @description	A fun sticker store REST API
+// @termsOfService	https://swagger.io/terms/
+// @contact.name	Max Guzman
+// @contact.email	max.guzman@icloud.com
+// @license.name	Apache 2.0
+// @license.url	https://www.apache.org/licenses/LICENSE-2.0.html
+// @BasePath		/
+// @host			localhost:8000
 func main() {
 	middleware.FiberMiddleware(httpRouter)
 	routes.SwaggerRoute(httpRouter)
@@ -54,6 +54,13 @@ func main() {
 	routes.OrderRoutes(httpRouter, orderController)
 	routes.MetricsRoute(httpRouter)
 	routes.NotFoundRoute(httpRouter)
+
+	tp := utils.InitTracer(ctx)
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
 
 	if os.Getenv("ENV") == "dev" {
 		httpRouter.Serve()

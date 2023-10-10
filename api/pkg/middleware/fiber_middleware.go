@@ -6,6 +6,7 @@ import (
 
 	"github.com/ansrivas/fiberprometheus/v2"
 
+	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -18,7 +19,8 @@ func FiberMiddleware(httpRouter router.Router) {
 	httpRouter.
 		Use(cors.New()).
 		Use(setLogger()).
-		Use(fiberPrometheus(httpRouter).Middleware)
+		Use(fiberPrometheus(httpRouter).Middleware).
+		Use(otelfiber.Middleware())
 }
 
 func setLogger() func(ctx *fiber.Ctx) error {

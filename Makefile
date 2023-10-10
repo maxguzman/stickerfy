@@ -50,6 +50,7 @@ docker.stickerfy-api: docker.stickerfy-api.build
 		-e REDIS_PASSWORD="secret" \
 		-e KAFKA_BROKERS="broker:29092" \
 		-e TOPIC_NAME="stickerfy_order_added" \
+		-e OTEL_COLLECTOR_ENDPOINT="localhost:4317" \
 		stickerfy-api
 
 docker.redis:
