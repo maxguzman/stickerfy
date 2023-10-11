@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit'
 
-const apiURL = process.env.STICKERFY_SERVICE_URL || "http://localhost:8000/v1"
+const apiURL = process.env.STICKERFY_SERVICE_URL || "http://localhost:8000"
 
 export const POST = async (req: RequestEvent): Promise<Response> => {
   try {

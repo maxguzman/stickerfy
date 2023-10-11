@@ -1,4 +1,4 @@
-const apiURL = process.env.STICKERFY_SERVICE_URL || "http://localhost:8000/v1"
+const apiURL = process.env.STICKERFY_SERVICE_URL || "http://localhost:8000"
 
 export const GET = async (): Promise<Response> => {
   try {

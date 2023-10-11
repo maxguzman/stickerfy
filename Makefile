@@ -22,7 +22,7 @@ docker.stickerfy-webapp: docker.stickerfy-webapp.build
 		--name stickerfy-webapp \
 		--network dev-network \
 		-p 8080:8080 \
-		-e STICKERFY_SERVICE_URL="http://stickerfy-api:8000/v1" \
+		-e STICKERFY_SERVICE_URL="http://stickerfy-api:8000" \
 		-e OTEL_COLLECTOR_OTPL_TRACES_ENDPOINT="grpc://otel-collector:4317" \
 		stickerfy-webapp
 
