@@ -3,6 +3,7 @@ definitions:
   models.Order:
     properties:
       id:
+        format: uuid
         type: string
       items:
         items:
@@ -30,6 +31,7 @@ definitions:
         maxLength: 255
         type: string
       id:
+        format: uuid
         type: string
       image_path:
         maxLength: 255
@@ -47,6 +49,13 @@ definitions:
     - image_path
     - price
     - title
+    type: object
+  utils.HTTPError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
     type: object
 host: localhost:8000
 info:
@@ -66,36 +75,36 @@ paths:
       consumes:
       - application/json
       description: Get all exists orders.
+      operationId: get-all-orders
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: get all exists orders
       tags:
-      - Order
+      - orders
     post:
       consumes:
       - application/json
       description: Create a new order.
+      operationId: create-new-order
       parameters:
       - description: Order
         in: body
@@ -113,71 +122,75 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: create a new order
       tags:
-      - Order
+      - orders
   /products:
     delete:
       consumes:
       - application/json
       description: Delete product.
+      operationId: delete-product
+      parameters:
+      - description: Product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.Product'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: delete product
       tags:
-      - Product
+      - products
     get:
       consumes:
       - application/json
       description: Get all exists products.
+      operationId: get-all-products
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: get all exists products
       tags:
-      - Product
+      - products
     post:
       consumes:
       - application/json
       description: Create a new product.
+      operationId: create-product
       parameters:
       - description: Product
         in: body
@@ -191,70 +204,86 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.Product'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: create a new product
       tags:
-      - Product
+      - products
     put:
       consumes:
       - application/json
       description: Update product.
+      operationId: update-product
+      parameters:
+      - description: Product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.Product'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: update product
       tags:
-      - Product
+      - products
   /products/{id}:
     get:
       consumes:
       - application/json
       description: Get product by given ID.
+      operationId: get-product-by-id
+      parameters:
+      - description: Product ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+        x-example: 4a7cdb5c-bd2a-47f6-9d4a-3531b110d26d
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.Product'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: get product by given ID
       tags:
-      - Product
+      - products
+schemes:
+- http
+- https
 swagger: "2.0"
+tags:
+- description: Products API
+  name: products
+- description: Orders API
+  name: orders

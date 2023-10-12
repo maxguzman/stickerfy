@@ -8,6 +8,7 @@ import (
 	"stickerfy/app/models"
 	"stickerfy/app/services"
 	"stickerfy/pkg/platform/cache"
+	"stickerfy/pkg/utils"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -41,227 +42,201 @@ func NewProductController(ctx context.Context, productService services.ProductSe
 }
 
 // GetAll returns all products
-
-//	@Description	Get all exists products.
-//	@Summary		get all exists products
-//	@Tags			Product
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	map[string]interface{}
-//	@Failure		500	{object}	map[string]interface{}
-//	@Router			/products [get]
+//
+// @Summary		get all exists products
+// @Description	Get all exists products.
+// @ID				get-all-products
+// @Tags			products
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	utils.HTTPProducts
+// @Failure		400	{object}	utils.HTTPError
+// @Failure		500	{object}	utils.HTTPError
+// @Router			/products [get]
 func (pc *productController) GetAll(c *fiber.Ctx) error {
 	cachedProducts, err := pc.productsCache.Get(pc.context, "products")
 	if err == redis.Nil {
 		products, err := pc.productService.GetAll(pc.context)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-				"products": nil,
-				"error":    true,
-				"msg":      "there where no products found",
+			return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+				Code:    http.StatusInternalServerError,
+				Message: "there was an error getting the products",
 			})
 		}
 		if products == nil {
-			return c.Status(http.StatusNotFound).JSON(fiber.Map{
-				"products": nil,
-				"error":    true,
-				"msg":      "there where no products found",
+			return c.Status(http.StatusNotFound).JSON(utils.HTTPError{
+				Code:    http.StatusNotFound,
+				Message: "there where no products found",
 			})
 		}
 		encodedProducts, err := json.Marshal(products)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-				"products": nil,
-				"error":    true,
-				"msg":      "there was an error unmarshaling the products",
+			return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+				Code:    http.StatusInternalServerError,
+				Message: "there was an error marshaling the products",
 			})
 		}
 		err = pc.productsCache.Set(pc.context, "products", encodedProducts, time.Minute*5)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-				"products": nil,
-				"error":    true,
-				"msg":      "there was an error caching the products",
+			return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+				Code:    http.StatusInternalServerError,
+				Message: "there was an error setting the products in cache",
 			})
 		}
-		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"products": products,
-			"error":    false,
-			"msg":      nil,
+		return c.Status(http.StatusOK).JSON(utils.HTTPProducts{
+			Products: products,
 		})
 	}
 
 	if err != nil {
 		fmt.Printf("there was an error getting the products from cache: %v", err)
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"products": nil,
-			"error":    true,
-			"msg":      "there was an error getting the products from cache",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error getting the products from cache",
 		})
 	}
 
 	var products []models.Product
 	err = json.Unmarshal([]byte(cachedProducts), &products)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"products": nil,
-			"error":    true,
-			"msg":      "there was an error unmarshaling the products",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error unmarshaling the products",
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"products": products,
-		"error":    false,
-		"msg":      nil,
+	return c.Status(http.StatusOK).JSON(utils.HTTPProducts{
+		Products: products,
 	})
 }
 
 // Get returns a product by id
 //
-//	@Description	Get product by given ID.
 //	@Summary		get product by given ID
-//	@Tags			Product
+//	@Description	Get product by given ID.
+//	@ID				get-product-by-id
+//	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	map[string]interface{}
-//	@Failure		500	{object}	map[string]interface{}
+//	@Param			id	path		string	true	"Product ID" format(uuid) extensions(x-example=4a7cdb5c-bd2a-47f6-9d4a-3531b110d26d)
+//	@Success		200	{object}	models.Product
+//	@Failure		400	{object}	utils.HTTPError
+//	@Failure		500	{object}	utils.HTTPError
 //	@Router			/products/{id} [get]
 func (pc *productController) GetByID(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"product": nil,
-			"error":   true,
-			"msg":     "invalid id",
+		return c.Status(http.StatusBadRequest).JSON(utils.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "invalid product id",
 		})
 	}
 
 	product, err := pc.productService.GetByID(pc.context, id)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"product": nil,
-			"error":   true,
-			"msg":     "there was an error getting the product",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error getting the product",
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"product": product,
-		"error":   false,
-		"msg":     nil,
-	})
+	return c.Status(http.StatusOK).JSON(product)
 }
 
 // New creates a new product
 //
-//	@Description	Create a new product.
 //	@Summary		create a new product
-//	@Tags			Product
+//	@Description	Create a new product.
+//	@ID				create-product
+//	@Tags			products
 //	@Accept			json
 //	@Produce		json
 //	@Param			product	body		models.Product	true	"Product"
-//	@Success		201		{object}	map[string]interface{}
-//	@Failure		400		{object}	map[string]interface{}
-//	@Failure		500		{object}	map[string]interface{}
+//	@Success		201		{object}	models.Product
+//	@Failure		400		{object}	utils.HTTPError
+//	@Failure		500		{object}	utils.HTTPError
 //	@Router			/products [post]
 func (pc *productController) Post(c *fiber.Ctx) error {
 	var product models.Product
 	product.ID = uuid.New()
 	if err := c.BodyParser(&product); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"msg":     "invalid product",
-			"product": nil,
+		return c.Status(http.StatusBadRequest).JSON(utils.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "invalid product",
 		})
 	}
 	err := pc.productService.Post(pc.context, product)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"product": nil,
-			"error":   true,
-			"msg":     "there was an error creating the product",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error creating the product",
 		})
 	}
 
-	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"product": product,
-		"error":   false,
-		"msg":     nil,
-	})
+	return c.Status(http.StatusCreated).JSON(product)
 }
 
 // Update updates a product
 //
-//	@Description	Update product.
 //	@Summary		update product
-//	@Tags			Product
+//	@Description	Update product.
+//	@ID				update-product
+//	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	map[string]interface{}
-//	@Failure		500	{object}	map[string]interface{}
+//	@Param			product	body		models.Product	true	"Product"
+//	@Success		200	{object}	models.Product
+//	@Failure		400	{object}	utils.HTTPError
+//	@Failure		500	{object}	utils.HTTPError
 //	@Router			/products [put]
 func (pc *productController) Update(c *fiber.Ctx) error {
 	var product models.Product
 	if err := c.BodyParser(&product); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"msg":     "invalid product",
-			"product": nil,
+		return c.Status(http.StatusBadRequest).JSON(utils.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "invalid product",
 		})
 	}
 
 	err := pc.productService.Update(pc.context, product)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"product": nil,
-			"error":   true,
-			"msg":     "there was an error updating the product",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error updating the product",
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"product": product,
-		"error":   false,
-		"msg":     nil,
-	})
+	return c.Status(http.StatusOK).JSON(product)
 }
 
 // Delete deletes a product
 //
-//	@Description	Delete product.
 //	@Summary		delete product
-//	@Tags			Product
+//	@Description	Delete product.
+//	@ID				delete-product
+//	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	map[string]interface{}
-//	@Failure		500	{object}	map[string]interface{}
+//	@Param			product	body		models.Product	true	"Product"
+//	@Success		200	{object}	models.Product
+//	@Failure		400	{object}	utils.HTTPError
+//	@Failure		500	{object}	utils.HTTPError
 //	@Router			/products [delete]
 func (pc *productController) Delete(c *fiber.Ctx) error {
 	var product models.Product
 	if err := c.BodyParser(&product); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"msg":     "invalid product",
-			"product": nil,
+		return c.Status(http.StatusBadRequest).JSON(utils.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "invalid product",
 		})
 	}
 	err := pc.productService.Delete(pc.context, product)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"product": nil,
-			"error":   true,
-			"msg":     "there was an error deleting the product",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error deleting the product",
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"product": product,
-		"error":   false,
-		"msg":     nil,
-	})
+	return c.Status(http.StatusOK).JSON(product)
 }

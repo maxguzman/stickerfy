@@ -8,6 +8,7 @@ import (
 	"stickerfy/app/services"
 	"stickerfy/pkg/metrics"
 	"stickerfy/pkg/platform/events"
+	"stickerfy/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -38,91 +39,83 @@ func NewOrderController(ctx context.Context, orderService services.OrderService,
 }
 
 // GetAll returns all orders
-//	@Description	Get all exists orders.
-//	@Summary		get all exists orders
-//	@Tags			Order
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	map[string]interface{}
-//	@Failure		404	{object}	map[string]interface{}
-//	@Failure		500	{object}	map[string]interface{}
-//	@Router			/orders [get]
+// w
+// @Summary		get all exists orders
+// @Description	Get all exists orders.
+// @ID				get-all-orders
+// @Tags			orders
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	utils.HTTPOrders
+// @Failure		400	{object}	utils.HTTPError
+// @Failure		404	{object}	utils.HTTPError
+// @Failure		500	{object}	utils.HTTPError
+// @Router			/orders [get]
 func (oc *orderController) GetAll(c *fiber.Ctx) error {
 	orders, err := oc.orderService.GetAll(oc.context)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"orders": nil,
-			"error":  true,
-			"msg":    "there where no orders found",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error getting the orders",
 		})
 	}
 
 	if orders == nil {
-		return c.Status(http.StatusNotFound).JSON(fiber.Map{
-			"orders": nil,
-			"error":  true,
-			"msg":    "there where no orders found",
+		return c.Status(http.StatusNotFound).JSON(utils.HTTPError{
+			Code:    http.StatusNotFound,
+			Message: "there are no orders",
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"orders": orders,
-		"error":  false,
-		"msg":    nil,
+	return c.Status(http.StatusOK).JSON(utils.HTTPOrders{
+		Orders: orders,
 	})
 }
 
 // Post creates a new order
-//	@Description	Create a new order.
-//	@Summary		create a new order
-//	@Tags			Order
-//	@Accept			json
-//	@Produce		json
-//	@Param			order	body		models.Order	true	"Order"
-//	@Success		201		{object}	models.Order
-//	@Failure		400		{object}	map[string]interface{}
-//	@Failure		500		{object}	map[string]interface{}
-//	@Router			/orders [post]
+//
+// @Summary		create a new order
+// @Description	Create a new order.
+// @ID				create-new-order
+// @Tags			orders
+// @Accept			json
+// @Produce		json
+// @Param			order	body		models.Order	true	"Order"
+// @Success		201		{object}	models.Order
+// @Failure		400		{object}	utils.HTTPError
+// @Failure		500		{object}	utils.HTTPError
+// @Router			/orders [post]
 func (oc *orderController) Post(c *fiber.Ctx) error {
 	var order models.Order
 	order.ID = uuid.New()
 	if err := c.BodyParser(&order); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"order": nil,
-			"error": true,
-			"msg":   "invalid order",
+		return c.Status(http.StatusBadRequest).JSON(utils.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "invalid order",
 		})
 	}
 	err := oc.orderService.Post(oc.context, order)
 	if err != nil {
 		oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"order": nil,
-			"error": true,
-			"msg":   "there was an error creating the order",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error creating the order",
 		})
 	}
 	encodedOrder, err := json.Marshal(order)
 	if err != nil {
 		oc.customMetrics.IncrementCounter("orderFailed", order.ID.String())
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"order": nil,
-			"error": true,
-			"msg":   "there was an error encoding the order",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error encoding the order",
 		})
 	}
 	if err := oc.eventProducer.Publish(encodedOrder); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"order": nil,
-			"error": true,
-			"msg":   "there was an error publishing the order",
+		return c.Status(http.StatusInternalServerError).JSON(utils.HTTPError{
+			Code:    http.StatusInternalServerError,
+			Message: "there was an error publishing the order",
 		})
 	}
 	oc.customMetrics.IncrementCounter("orderAdded", order.ID.String())
-	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"order": order,
-		"error": false,
-		"msg":   nil,
-	})
+	return c.Status(http.StatusCreated).JSON(order)
 }

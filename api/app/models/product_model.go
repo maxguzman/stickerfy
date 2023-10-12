@@ -6,7 +6,7 @@ import (
 
 // Product represents a product
 type Product struct {
-	ID          uuid.UUID `json:"id" bson:"_id" validate:"required,uuid"`
+	ID          uuid.UUID `json:"id" bson:"_id" validate:"required,uuid" format:"uuid"`
 	ImagePath   string    `json:"image_path" validate:"required,lte=255"`
 	Title       string    `json:"title" validate:"required,lte=255"`
 	Description string    `json:"description" validate:"required,lte=255"`

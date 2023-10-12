@@ -14,8 +14,6 @@ Feature: products
     And the response should match json:
       """
       {
-        "error": false,
-        "msg": null,
         "products": [
           {
             "id": "69e3acde-9d90-4eea-8074-8e0d95ed7910",
@@ -50,9 +48,8 @@ Feature: products
     And the response should match json:
       """
       {
-        "error": true,
-        "msg": "there where no products found",
-        "products": null
+        "code": 404,
+        "message": "there where no products found"
       }
       """
 
@@ -65,15 +62,11 @@ Feature: products
     And the response should match json:
       """
       {
-        "error": false,
-        "msg": null,
-        "product": {
-          "id": "69e3acde-9d90-4eea-8074-8e0d95ed7910",
-          "title": "Product 1",
-          "price": 100,
-          "image_path": "path/to/file",
-          "description": "Description 1"
-        }
+        "id": "69e3acde-9d90-4eea-8074-8e0d95ed7910",
+        "title": "Product 1",
+        "price": 100,
+        "image_path": "path/to/file",
+        "description": "Description 1"
       }
       """
 
