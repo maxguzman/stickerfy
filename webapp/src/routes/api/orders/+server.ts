@@ -4,7 +4,7 @@ const apiURL = process.env.STICKERFY_SERVICE_URL || "http://localhost:8000"
 
 export const POST = async (req: RequestEvent): Promise<Response> => {
   try {
-    const res = await (fetch(apiURL + "/order", {
+    const res = await (fetch(apiURL + "/orders", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

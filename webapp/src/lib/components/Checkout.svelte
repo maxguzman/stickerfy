@@ -11,7 +11,7 @@
 
 	const checkOut = async () => {
 		checkingOut = true
-		const url = '/api/order'
+		const url = '/api/orders'
 		try {
 			const result = await fetch(url, {
 				method: 'POST',
